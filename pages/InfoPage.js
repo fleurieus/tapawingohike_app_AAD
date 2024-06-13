@@ -90,14 +90,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 20,
-    backgroundColor: '#4CAF50', // Green color as an example
+    backgroundColor: '#4CAF50',
     paddingVertical: 10,
     borderRadius: 5,
   },
   buttonText: {
     marginLeft: 10,
     fontSize: 16,
-    color: 'white', // White color for text to contrast with green background
+    color: 'white',
   },
   iconRow: {
     flexDirection: 'row',
