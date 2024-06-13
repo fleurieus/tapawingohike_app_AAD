@@ -17,11 +17,11 @@ const InfoPage = ({ navigation }) => {
             Volg de route naar het eind punt.{"\n"}
             De rode circle op het map is je doel.
           </Text>
-          <View style={styles.circle}></View>
+          <View style={[styles.circle, styles.redCircle]}></View>
           <Text style={styles.text}>
             De blauwe circle geeft je huidige locatie aan.
           </Text>
-          <View style={styles.circle}></View>
+          <View style={[styles.circle, styles.blueCircle]}></View>
           <Text style={styles.text}>Sommige routes hebben plaatjes en/of audio.</Text>
           <Text style={styles.text}>{"\u2022"} Plaatjes laten onderdelen van de route zien - zoek deze!</Text>
           <Text style={styles.text}>{"\u2022"} Luister naar de audio voor tips en info over de route.</Text>
@@ -60,19 +60,24 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 50,
+    marginBottom: 20,
   },
   text: {
     fontSize: 16,
-    marginBottom: 10, 
+    marginBottom: 10,
   },
   circle: {
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: 'red',
     alignSelf: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
+  },
+  redCircle: {
+    backgroundColor: 'red',
+  },
+  blueCircle: {
+    backgroundColor: 'blue',
   },
   button: {
     flexDirection: 'row',
