@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-paper';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import Header from '../components/Header';
 
 const InfoPage = ({ navigation }) => {
@@ -23,8 +23,14 @@ const InfoPage = ({ navigation }) => {
           </Text>
           <View style={[styles.circle, styles.blueCircle]}></View>
           <Text style={styles.text}>Sommige routes hebben plaatjes en/of audio.</Text>
-          <Text style={styles.text}>{"\u2022"} Plaatjes laten onderdelen van de route zien - zoek deze!</Text>
-          <Text style={styles.text}>{"\u2022"} Luister naar de audio voor tips en info over de route.</Text>
+          <View style={styles.iconRow}>
+            <FontAwesome5 name="image" size={16} color="black" style={styles.icon} />
+            <Text style={styles.text}>Plaatjes laten onderdelen van de route zien - zoek deze!</Text>
+          </View>
+          <View style={styles.iconRow}>
+            <FontAwesome5 name="volume-up" size={16} color="black" style={styles.icon} />
+            <Text style={styles.text}>Luister naar de audio voor tips en info over de route.</Text>
+          </View>
           <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
             <FontAwesome name="arrow-left" size={20} color="black" />
             <Text style={styles.buttonText}>TERUG NAAR LOGIN</Text>
@@ -60,7 +66,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginTop: 30,
   },
   text: {
     fontSize: 16,
@@ -84,10 +90,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 20,
+    backgroundColor: '#4CAF50', // Green color as an example
+    paddingVertical: 10,
+    borderRadius: 5,
   },
   buttonText: {
     marginLeft: 10,
     fontSize: 16,
-    color: 'black',
+    color: 'white', // White color for text to contrast with green background
+  },
+  iconRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  icon: {
+    marginRight: 10,
   },
 });
