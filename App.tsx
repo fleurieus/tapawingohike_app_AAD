@@ -49,7 +49,7 @@ function LoginScreen({ navigation }: Props) {
             onChangeText={setTeamCode}
             style={styles.input}
           />
-          <Button mode="contained" onPress={handleLogin} style={styles.button}>
+          <Button mode="contained" onPress={handleLogin}>
             Inloggen
           </Button>
           <TouchableOpacity style={styles.footerLink} onPress={() => navigation.navigate('Info')}>
@@ -86,21 +86,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#333',
     borderRadius: 10,
-    padding: 20, // Increased padding for more space inside the card
+    padding: 20,
     marginBottom: 20,
   },
   input: {
-    marginBottom: 30, // Reduced margin to make room for other elements
-    marginTop: 20, // Added more top margin to space it from the header
-  },
-  button: {
-    marginTop: 20, // Increased top margin for more spacing
+    marginBottom: 30, 
+    marginTop: 100,  
   },
   footerLink: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 30, // Increased top margin for more spacing
+    marginTop: 30,
   },
   footerText: {
     marginRight: 10,
