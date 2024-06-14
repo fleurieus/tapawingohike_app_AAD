@@ -1,38 +1,76 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { Button, Card, TextInput } from 'react-native-paper'; // Importing Button, Card, and TextInput from react-native-paper
-import { FontAwesome } from '@expo/vector-icons'; // Importing FontAwesome icon from react-native-vector-icons
+import { Button, Card, TextInput } from 'react-native-paper';
+import { FontAwesome } from '@expo/vector-icons';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
 import Header from './components/Header';
+import HikePage from './pages/HikePage';
+import InfoPage from './pages/InfoPage';
 
-export default function App() {
-  const [teamCode, setTeamCode] = React.useState('');
+type RootStackParamList = {
+  Login: undefined;
+  Hike: undefined;
+  Info: undefined;
+};
+
+type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
+type LoginScreenRouteProp = RouteProp<RootStackParamList, 'Login'>;
+
+type Props = {
+  navigation: LoginScreenNavigationProp;
+  route: LoginScreenRouteProp;
+};
+
+const Stack = createStackNavigator<RootStackParamList>();
+
+function LoginScreen({ navigation }: Props) {
+  const [teamCode, setTeamCode] = useState('');
 
   const handleLogin = () => {
-    // Add your login logic here
     console.log('Logging in with team code:', teamCode);
+    if (teamCode === 'expectedCode') {
+      navigation.navigate('Hike');
+    } else {
+      console.error('Login failed: Invalid team code');
+      alert('Login failed: Invalid team code');
+    }
   };
 
   return (
     <View style={styles.container}>
       <Card style={styles.card}>
         <Card.Content>
-        <Header />
+          <Header />
           <TextInput
-            label="Team Code" // Label for the text input
+            label="Team Code"
             value={teamCode}
             onChangeText={setTeamCode}
-            style={styles.input} // Custom styles for the text input
+            style={styles.input}
           />
-          <Button mode="contained" onPress={handleLogin} style={styles.button}>
+          <Button mode="contained" onPress={handleLogin}>
             Inloggen
           </Button>
-          <TouchableOpacity style={styles.footerLink}>
-        <Text style={styles.footerText}>Hoe werkt deze app?</Text>
-        <FontAwesome name="question-circle" size={20} color="black" />
-      </TouchableOpacity>
+          <TouchableOpacity style={styles.footerLink} onPress={() => navigation.navigate('Info')}>
+            <Text style={styles.footerText}>Hoe werkt deze app?</Text>
+            <FontAwesome name="question-circle" size={20} color="black" />
+          </TouchableOpacity>
         </Card.Content>
       </Card>
     </View>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Hike" component={HikePage} />
+        <Stack.Screen name="Info" component={InfoPage} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
@@ -44,28 +82,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   card: {
-    width: '80%', // Adjust width as needed
+    width: '80%',
     borderWidth: 1,
-    borderColor: '#333', // Darker border color
+    borderColor: '#333',
     borderRadius: 10,
-    padding: 10,
-    marginBottom: 20, // Add bottom margin to create space for the footer link
+    padding: 20,
+    marginBottom: 20,
   },
   input: {
-    marginBottom: 50, // Add some bottom margin
-    marginTop: 300
-  },
-  button: {
-    marginTop: 10, // Add some top margin
+    marginBottom: 30, 
+    marginTop: 100,  
   },
   footerLink: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center', // Add this line to center horizontally
-    marginTop: 20
+    justifyContent: 'center',
+    marginTop: 30,
   },
   footerText: {
-    marginRight: 20,
-    marginLeft: 20
+    marginRight: 10,
+    marginLeft: 10,
   },
 });
