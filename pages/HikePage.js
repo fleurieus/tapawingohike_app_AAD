@@ -1,11 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Image } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+import defaultImage from '../assets/tapaicon.png'; 
+
+const mockGetRoutePart = async () => {
+  return {
+    type: 'image', 
+    fullscreen: false,
+  };
+};
 
 const HikePage = () => {
   const [currentPosition, setCurrentPosition] = useState(null);
   const [region, setRegion] = useState(null);
+  const [routePart, setRoutePart] = useState(null);
   const endpoint = { latitude: 37.78825, longitude: -122.4324 };
 
   useEffect(() => {
@@ -22,7 +31,7 @@ const HikePage = () => {
         });
 
         const { latitude, longitude } = location.coords;
-        console.log('Initial Location:', latitude, longitude); // Debug log
+        console.log('Initial Location:', latitude, longitude);
         setCurrentPosition({ latitude, longitude });
         setRegion({
           latitude,
@@ -39,7 +48,7 @@ const HikePage = () => {
           },
           (location) => {
             const { latitude, longitude } = location.coords;
-            console.log('Updated Location:', latitude, longitude); // Debug log
+            console.log('Updated Location:', latitude, longitude);
             setCurrentPosition({ latitude, longitude });
             setRegion((prevRegion) => ({
               ...prevRegion,
@@ -53,14 +62,39 @@ const HikePage = () => {
       }
     };
 
+    const fetchRoutePart = async () => {
+      try {
+        const response = await mockGetRoutePart();
+        setRoutePart(response);
+      } catch (error) {
+        console.error('Error fetching route part:', error);
+      }
+    };
+
     getCurrentLocation();
+    fetchRoutePart();
   }, []);
+
+  if (!routePart) {
+    return <Text>Loading...</Text>;
+  }
+
+  if (routePart.type === 'image' && routePart.fullscreen) {
+    return (
+      <View style={styles.fullScreenContainer}>
+        <Image source={defaultImage} style={styles.fullScreenImage} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
+      {routePart.type === 'image' && !routePart.fullscreen && (
+        <Image source={defaultImage} style={styles.halfScreenImage} />
+      )}
       {region ? (
         <MapView
-          style={styles.map}
+          style={routePart.type === 'image' && !routePart.fullscreen ? styles.halfScreenMap : styles.map}
           region={region}
           onRegionChangeComplete={(region) => setRegion(region)}
         >
@@ -86,8 +120,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  fullScreenContainer: {
+    flex: 1,
+  },
+  fullScreenImage: {
+    width: '100%',
+    height: '100%',
+  },
+  halfScreenImage: {
+    width: '100%',
+    height: '50%',
+  },
   map: {
     ...StyleSheet.absoluteFillObject,
+  },
+  halfScreenMap: {
+    width: '100%',
+    height: '50%',
   },
   circle: {
     width: 20,
