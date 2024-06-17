@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Image } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-import defaultImage from '../assets/tapaicon.png'; 
+import { Audio } from 'expo-av';
+import defaultImage from '../assets/tapaicon.png';
 
 const mockGetRoutePart = async () => {
   return {
-    type: 'image', 
-    fullscreen: false,
+    type: 'audio', // or 'image' or 'map' 
+    fullscreen: true,
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Example audio URL
   };
 };
 
@@ -15,6 +17,8 @@ const HikePage = () => {
   const [currentPosition, setCurrentPosition] = useState(null);
   const [region, setRegion] = useState(null);
   const [routePart, setRoutePart] = useState(null);
+  const [sound, setSound] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
   const endpoint = { latitude: 37.78825, longitude: -122.4324 };
 
   useEffect(() => {
@@ -66,6 +70,10 @@ const HikePage = () => {
       try {
         const response = await mockGetRoutePart();
         setRoutePart(response);
+        if (response.type === 'audio') {
+          const { sound } = await Audio.Sound.createAsync({ uri: response.audioUrl });
+          setSound(sound);
+        }
       } catch (error) {
         console.error('Error fetching route part:', error);
       }
@@ -73,7 +81,32 @@ const HikePage = () => {
 
     getCurrentLocation();
     fetchRoutePart();
+
+    return () => {
+      if (sound) {
+        sound.unloadAsync();
+      }
+    };
   }, []);
+
+  const playPauseAudio = async () => {
+    if (sound) {
+      if (isPlaying) {
+        await sound.pauseAsync();
+      } else {
+        await sound.playAsync();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const rewindAudio = async () => {
+    if (sound) {
+      const status = await sound.getStatusAsync();
+      const newPosition = Math.max(0, status.positionMillis - 10000); // Rewind 10 seconds
+      await sound.setPositionAsync(newPosition);
+    }
+  };
 
   if (!routePart) {
     return <Text>Loading...</Text>;
@@ -87,14 +120,41 @@ const HikePage = () => {
     );
   }
 
+  if (routePart.type === 'audio' && routePart.fullscreen) {
+    return (
+      <View style={styles.fullScreenContainer}>
+        <View style={styles.audioPlayerContainer}>
+          <Text>Playing Audio...</Text>
+          <TouchableOpacity onPress={playPauseAudio} style={styles.controlButton}>
+            <Text>{isPlaying ? 'Pause' : 'Play'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={rewindAudio} style={styles.controlButton}>
+            <Text>Rewind</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       {routePart.type === 'image' && !routePart.fullscreen && (
         <Image source={defaultImage} style={styles.halfScreenImage} />
       )}
+      {routePart.type === 'audio' && !routePart.fullscreen && (
+        <View style={styles.halfScreenAudio}>
+          <Text>Playing Audio...</Text>
+          <TouchableOpacity onPress={playPauseAudio} style={styles.controlButton}>
+            <Text>{isPlaying ? 'Pause' : 'Play'}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={rewindAudio} style={styles.controlButton}>
+            <Text>Rewind</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       {region ? (
         <MapView
-          style={routePart.type === 'image' && !routePart.fullscreen ? styles.halfScreenMap : styles.map}
+          style={routePart.fullscreen || routePart.type === 'audio' ? styles.map : styles.halfScreenMap}
           region={region}
           onRegionChangeComplete={(region) => setRegion(region)}
         >
@@ -122,6 +182,8 @@ const styles = StyleSheet.create({
   },
   fullScreenContainer: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   fullScreenImage: {
     width: '100%',
@@ -130,6 +192,12 @@ const styles = StyleSheet.create({
   halfScreenImage: {
     width: '100%',
     height: '50%',
+  },
+  halfScreenAudio: {
+    width: '100%',
+    height: '50%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   map: {
     ...StyleSheet.absoluteFillObject,
@@ -151,6 +219,17 @@ const styles = StyleSheet.create({
   },
   blueCircle: {
     backgroundColor: 'blue',
+  },
+  audioPlayerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  controlButton: {
+    margin: 10,
+    padding: 10,
+    backgroundColor: '#ccc',
+    borderRadius: 5,
   },
 });
 
