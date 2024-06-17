@@ -7,8 +7,8 @@ import defaultImage from '../assets/tapaicon.png';
 
 const mockGetRoutePart = async () => {
   return {
-    type: 'map', // or 'image' or 'map' or 'audio'
-    fullscreen: true,
+    type: 'image', // or 'image' or 'map' or 'audio'
+    fullscreen: false,
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Example audio URL
   };
 };
