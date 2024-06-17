@@ -3,12 +3,13 @@ import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Button, Card, TextInput } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
 
 import NotificationToast from './components/NotificationToast';
 import Header from './components/Header';
 import HikePage from './pages/HikePage';
 import InfoPage from './pages/InfoPage';
-import { NavigationContainer } from '@react-navigation/native';
+import CustomHeader from './components/CustomHeader'; // Import the CustomHeader
 
 type RootStackParamList = {
   Login: undefined;
@@ -85,9 +86,21 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Hike" component={HikePage} />
-        <Stack.Screen name="Info" component={InfoPage} />
+        <Stack.Screen 
+          name="Login" 
+          component={LoginScreen} 
+          options={{ header: () => <CustomHeader title="Login" /> }} // Add custom header
+        />
+        <Stack.Screen 
+          name="Hike" 
+          component={HikePage} 
+          options={{ header: () => <CustomHeader title="Hike" /> }} // Add custom header
+        />
+        <Stack.Screen 
+          name="Info" 
+          component={InfoPage} 
+          options={{ header: () => <CustomHeader title="Info" /> }} // Add custom header
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
