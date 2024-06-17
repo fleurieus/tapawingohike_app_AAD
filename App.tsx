@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Button, Card, TextInput } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
-import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
+
+import NotificationToast from './components/NotificationToast';
 import Header from './components/Header';
 import HikePage from './pages/HikePage';
 import InfoPage from './pages/InfoPage';
+import { NavigationContainer } from '@react-navigation/native';
 
 type RootStackParamList = {
   Login: undefined;
@@ -16,26 +17,37 @@ type RootStackParamList = {
 };
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
-type LoginScreenRouteProp = RouteProp<RootStackParamList, 'Login'>;
 
 type Props = {
   navigation: LoginScreenNavigationProp;
-  route: LoginScreenRouteProp;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 function LoginScreen({ navigation }: Props) {
   const [teamCode, setTeamCode] = useState('');
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState<'success' | 'error' | 'default'>('default');
 
   const handleLogin = () => {
     console.log('Logging in with team code:', teamCode);
     if (teamCode === 'expectedCode') {
-      navigation.navigate('Hike');
+      setToastMessage('Login successful!');
+      setToastType('success');
+      setShowToast(true);
+      setTimeout(() => {
+        navigation.navigate('Hike');
+      }, 1500); // Navigate after 1.5 seconds
     } else {
-      console.error('Login failed: Invalid team code');
-      alert('Login failed: Invalid team code');
+      setToastMessage('Login failed: Invalid team code');
+      setToastType('error');
+      setShowToast(true);
     }
+  };
+
+  const hideToast = () => {
+    setShowToast(false);
   };
 
   return (
@@ -58,6 +70,13 @@ function LoginScreen({ navigation }: Props) {
           </TouchableOpacity>
         </Card.Content>
       </Card>
+
+      <NotificationToast
+        message={toastMessage}
+        type={toastType}
+        showToast={showToast}
+        onHide={hideToast}
+      />
     </View>
   );
 }
@@ -90,8 +109,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-    marginBottom: 30, 
-    marginTop: 100,  
+    marginBottom: 30,
+    marginTop: 100,
   },
   footerLink: {
     flexDirection: 'row',
