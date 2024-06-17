@@ -7,7 +7,7 @@ import defaultImage from '../assets/tapaicon.png';
 
 const mockGetRoutePart = async () => {
   return {
-    type: 'audio', // or 'image' or 'map' 
+    type: 'map', // or 'image' or 'map' or 'audio'
     fullscreen: true,
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Example audio URL
   };
@@ -136,6 +136,27 @@ const HikePage = () => {
     );
   }
 
+  if (routePart.type === 'map' && routePart.fullscreen) {
+    return (
+      <View style={styles.fullScreenContainer}>
+        <MapView
+          style={styles.fullScreenMap}
+          region={region}
+          onRegionChangeComplete={(region) => setRegion(region)}
+        >
+          {currentPosition && (
+            <Marker coordinate={currentPosition} title="Current Location">
+              <View style={[styles.circle, styles.blueCircle]} />
+            </Marker>
+          )}
+          <Marker coordinate={endpoint} title="Endpoint">
+            <View style={[styles.circle, styles.redCircle]} />
+          </Marker>
+        </MapView>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       {routePart.type === 'image' && !routePart.fullscreen && (
@@ -152,9 +173,9 @@ const HikePage = () => {
           </TouchableOpacity>
         </View>
       )}
-      {region ? (
+      {region && !routePart.fullscreen && (
         <MapView
-          style={routePart.fullscreen || routePart.type === 'audio' ? styles.map : styles.halfScreenMap}
+          style={styles.halfScreenMap}
           region={region}
           onRegionChangeComplete={(region) => setRegion(region)}
         >
@@ -167,7 +188,8 @@ const HikePage = () => {
             <View style={[styles.circle, styles.redCircle]} />
           </Marker>
         </MapView>
-      ) : (
+      )}
+      {!region && !routePart.fullscreen && (
         <Text>Loading...</Text>
       )}
     </View>
@@ -199,12 +221,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  map: {
-    ...StyleSheet.absoluteFillObject,
-  },
   halfScreenMap: {
     width: '100%',
-    height: '50%',
+    height: '50%', // Adjusted map height for half screen
+  },
+  fullScreenMap: {
+    ...StyleSheet.absoluteFillObject, // Covering the entire screen
   },
   circle: {
     width: 20,
