@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Audio } from 'expo-av';
+import LocationUtils from '../utils/LocationUtils.js';
 import defaultImage from '../assets/tapaicon.png';
 
 const mockGetRoutePart = async () => {
@@ -10,6 +11,7 @@ const mockGetRoutePart = async () => {
     type: 'image', // or 'image' or 'map' or 'audio'
     fullscreen: false,
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Example audio URL
+    radius: 25
   };
 };
 
@@ -59,6 +61,10 @@ const HikePage = () => {
               latitude,
               longitude,
             }));
+
+            // Calculate distance to endpoint and log it
+            const distance = LocationUtils.calculateDistance(latitude, longitude, endpoint.latitude, endpoint.longitude);
+            console.log('Distance to endpoint in meters:', distance);
           }
         );
       } catch (error) {
