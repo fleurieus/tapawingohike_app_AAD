@@ -30,8 +30,29 @@ const CustomHeader = ({ title }) => {
           text: 'OK',
           onPress: () => {
             // Handle the undo action here
-            // Example: navigation.goBack();
             console.log('Undo action confirmed');
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  // Function to handle next action
+  const handleNextAction = () => {
+    Alert.alert(
+      'Confirm',
+      'Ga naar het volgende route deel?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            // Handle the next action here
+            console.log('Next action confirmed');
           },
         },
       ],
@@ -47,6 +68,9 @@ const CustomHeader = ({ title }) => {
           <View style={styles.rightButtons}>
             <TouchableOpacity onPress={handleUndoAction}>
               <FontAwesome name="undo" size={24} color="black" style={styles.icon} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleNextAction}>
+              <FontAwesome name="arrow-right" size={24} color="black" style={styles.icon} />
             </TouchableOpacity>
           </View>
         );
