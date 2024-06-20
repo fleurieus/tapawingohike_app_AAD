@@ -7,23 +7,36 @@ import LocationUtils from '../utils/LocationUtils.js';
 import defaultImage from '../assets/tapaicon.png';
 import FinishRoutePartNotification from '../components/FinishRoutePartNotification';
 
-const mockGetRoutePart = async () => {
-  return {
-    type: 'image', // or 'image' or 'map' or 'audio'
-    fullscreen: false,
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Example audio URL
-    radius: 25,
-  };
+const mockGetRouteParts = async () => {
+  return [
+    {
+      type: 'image',
+      fullscreen: false,
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+      radius: 25,
+      endpoint: { latitude: 37.421956, longitude: -122.084040 },
+    },
+    {
+      type: 'audio',
+      fullscreen: false,
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+      radius: 25,
+      endpoint: { latitude: 37.422000, longitude: -122.085000 },
+    },
+  ];
 };
 
 const HikePage = () => {
   const [currentPosition, setCurrentPosition] = useState(null);
   const [region, setRegion] = useState(null);
-  const [routePart, setRoutePart] = useState(null);
+  const [routeParts, setRouteParts] = useState([]);
+  const [currentRoutePartIndex, setCurrentRoutePartIndex] = useState(0);
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
-  const endpoint = { latitude: 37.421956, longitude: -122.084040 };
+  const [isLoading, setIsLoading] = useState(true); // Track loading state
+
+  const currentRoutePart = routeParts[currentRoutePartIndex];
 
   useEffect(() => {
     const getCurrentLocation = async () => {
@@ -70,35 +83,39 @@ const HikePage = () => {
             longitude,
           }));
 
-          if (routePart) {
-            const distance = LocationUtils.calculateDistance(latitude, longitude, endpoint.latitude, endpoint.longitude);
+          if (currentRoutePart) {
+            const distance = LocationUtils.calculateDistance(latitude, longitude, currentRoutePart.endpoint.latitude, currentRoutePart.endpoint.longitude);
             console.log('Distance to endpoint in meters:', distance);
 
-            if (distance <= routePart.radius) {
+            if (distance <= currentRoutePart.radius) {
               console.log('Destination reached, showing notification');
               setShowNotification(true);
             }
+          } else {
+            console.log("Error: No current route part");
           }
         }
       );
     };
 
-    const fetchRoutePart = async () => {
+    const fetchRouteParts = async () => {
       try {
-        const response = await mockGetRoutePart();
-        setRoutePart(response);
-        if (response.type === 'audio') {
-          const { sound } = await Audio.Sound.createAsync({ uri: response.audioUrl });
+        const response = await mockGetRouteParts();
+        setRouteParts(response);
+        if (response.length > 0 && response[0].type === 'audio') {
+          const { sound } = await Audio.Sound.createAsync({ uri: response[0].audioUrl });
           setSound(sound);
         }
       } catch (error) {
-        console.error('Error fetching route part:', error);
+        console.error('Error fetching route parts:', error);
+      } finally {
+        setIsLoading(false); // Set loading state to false after fetching
       }
     };
 
     const initialize = async () => {
       await getCurrentLocation();
-      await fetchRoutePart();
+      await fetchRouteParts();
       await setupLocationWatcher();
     };
 
@@ -109,7 +126,17 @@ const HikePage = () => {
         sound.unloadAsync();
       }
     };
-  }, [routePart]);
+  }, []);
+
+  useEffect(() => {
+    if (currentRoutePart && currentRoutePart.type === 'audio') {
+      const loadAudio = async () => {
+        const { sound } = await Audio.Sound.createAsync({ uri: currentRoutePart.audioUrl });
+        setSound(sound);
+      };
+      loadAudio();
+    }
+  }, [currentRoutePart]);
 
   const playPauseAudio = async () => {
     if (sound) {
@@ -133,14 +160,18 @@ const HikePage = () => {
   const handleNextPart = () => {
     console.log('Proceeding to the next part of the route');
     setShowNotification(false);
-    // Logic to proceed to the next part of the route
+    setCurrentRoutePartIndex((prevIndex) => prevIndex + 1);
   };
 
-  if (!routePart) {
+  if (isLoading) { // Check isLoading state to show loading indicator
     return <Text>Loading...</Text>;
   }
 
-  if (routePart.type === 'image' && routePart.fullscreen) {
+  if (routeParts.length === 0) {
+    return <Text>Error: No route parts available.</Text>;
+  }
+
+  if (currentRoutePart.type === 'image' && currentRoutePart.fullscreen) {
     return (
       <View style={styles.fullScreenContainer}>
         <Image source={defaultImage} style={styles.fullScreenImage} />
@@ -148,7 +179,7 @@ const HikePage = () => {
     );
   }
 
-  if (routePart.type === 'audio' && routePart.fullscreen) {
+  if (currentRoutePart.type === 'audio' && currentRoutePart.fullscreen) {
     return (
       <View style={styles.fullScreenContainer}>
         <View style={styles.audioPlayerContainer}>
@@ -164,7 +195,7 @@ const HikePage = () => {
     );
   }
 
-  if (routePart.type === 'map' && routePart.fullscreen) {
+  if (currentRoutePart.type === 'map' && currentRoutePart.fullscreen) {
     return (
       <View style={styles.fullScreenContainer}>
         <MapView
@@ -177,7 +208,7 @@ const HikePage = () => {
               <View style={[styles.circle, styles.blueCircle]} />
             </Marker>
           )}
-          <Marker coordinate={endpoint} title="Endpoint">
+          <Marker coordinate={currentRoutePart.endpoint} title="Endpoint">
             <View style={[styles.circle, styles.redCircle]} />
           </Marker>
         </MapView>
@@ -193,10 +224,10 @@ const HikePage = () => {
 
   return (
     <View style={styles.container}>
-      {routePart.type === 'image' && !routePart.fullscreen && (
+      {currentRoutePart.type === 'image' && !currentRoutePart.fullscreen && (
         <Image source={defaultImage} style={styles.halfScreenImage} />
       )}
-      {routePart.type === 'audio' && !routePart.fullscreen && (
+      {currentRoutePart.type === 'audio' && !currentRoutePart.fullscreen && (
         <View style={styles.halfScreenAudio}>
           <Text>Playing Audio...</Text>
           <TouchableOpacity onPress={playPauseAudio} style={styles.controlButton}>
@@ -207,7 +238,7 @@ const HikePage = () => {
           </TouchableOpacity>
         </View>
       )}
-      {region && !routePart.fullscreen && (
+      {region && !currentRoutePart.fullscreen && (
         <MapView
           style={styles.halfScreenMap}
           region={region}
@@ -218,21 +249,21 @@ const HikePage = () => {
               <View style={[styles.circle, styles.blueCircle]} />
             </Marker>
           )}
-          <Marker coordinate={endpoint} title="Endpoint">
+          <Marker coordinate={currentRoutePart.endpoint} title="Endpoint">
             <View style={[styles.circle, styles.redCircle]} />
           </Marker>
         </MapView>
       )}
-      {!region && !routePart.fullscreen && (
+      {!region && !currentRoutePart.fullscreen && (
         <Text>Loading...</Text>
       )}
       {showNotification && (
         <FinishRoutePartNotification
-          message="Great work! You have reached the endpoint of the route."
+          message="You have reached the endpoint of this part of the route. Do you want to proceed to the next part?"
           onNextPart={handleNextPart}
         />
       )}
-    </View>
+       </View>
   );
 };
 
@@ -289,3 +320,4 @@ const styles = StyleSheet.create({
 });
 
 export default HikePage;
+
