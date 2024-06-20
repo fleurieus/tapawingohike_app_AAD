@@ -7,7 +7,7 @@ import LocationUtils from '../utils/LocationUtils.js';
 import defaultImage from '../assets/tapaicon.png';
 import FinishRoutePartNotification from '../components/FinishRoutePartNotification';
 
-const mockGetRouteParts = async () => {
+const mockGetRouteParts = () => {
   return [
     {
       type: 'image',
