@@ -1,15 +1,12 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const FinishRoutePartNotification = ({ message, onDismiss, onNextPart }) => {
+const FinishRoutePartNotification = ({ message, onNextPart }) => {
   return (
     <View style={styles.overlay}>
       <View style={styles.notification}>
         <Text style={styles.message}>{message}</Text>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={onDismiss} style={styles.button}>
-            <Text style={styles.buttonText}>Dismiss</Text>
-          </TouchableOpacity>
           <TouchableOpacity onPress={onNextPart} style={styles.button}>
             <Text style={styles.buttonText}>Next Part</Text>
           </TouchableOpacity>

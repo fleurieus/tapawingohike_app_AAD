@@ -130,11 +130,6 @@ const HikePage = () => {
     }
   };
 
-  const handleDismiss = () => {
-    console.log('Notification dismissed');
-    setShowNotification(false);
-  };
-
   const handleNextPart = () => {
     console.log('Proceeding to the next part of the route');
     setShowNotification(false);
@@ -189,7 +184,6 @@ const HikePage = () => {
         {showNotification && (
           <FinishRoutePartNotification
             message="You have reached the endpoint of this part of the route. Do you want to proceed to the next part?"
-            onDismiss={handleDismiss}
             onNextPart={handleNextPart}
           />
         )}
@@ -234,8 +228,7 @@ const HikePage = () => {
       )}
       {showNotification && (
         <FinishRoutePartNotification
-          message="You have reached the endpoint of this part of the route. Do you want to proceed to the next part?"
-          onDismiss={handleDismiss}
+          message="Great work! You have reached the endpoint of the route."
           onNextPart={handleNextPart}
         />
       )}
