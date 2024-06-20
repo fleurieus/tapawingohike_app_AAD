@@ -10,7 +10,7 @@ import FinishRoutePartNotification from '../components/FinishRoutePartNotificati
 const mockGetRouteParts = async () => {
   return [
     {
-      type: 'image', /// or 'image' or 'map' or 'audio'
+      type: 'image', ///////// or 'image' or 'map' or 'audio'
       fullscreen: false,
       audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Example audio URL
       radius: 25,
@@ -100,6 +100,7 @@ const HikePage = () => {
             }
           } else {
             console.log("Error fetching routepart");
+            setShowNotification(true);
           }
         }
       );
@@ -119,8 +120,8 @@ const HikePage = () => {
     };
 
     const initialize = async () => {
-      await getCurrentLocation();
       await fetchRouteParts();
+      await getCurrentLocation();
       await setupLocationWatcher();
     };
 
