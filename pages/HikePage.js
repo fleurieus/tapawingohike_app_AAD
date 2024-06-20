@@ -77,7 +77,7 @@ const HikePage = () => {
       await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.Highest,
-          timeInterval: 5000,
+          timeInterval: 10000,
           distanceInterval: 0, // Disable distance-based updates
         },
         (location) => {
