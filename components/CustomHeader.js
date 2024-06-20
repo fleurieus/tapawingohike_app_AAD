@@ -84,7 +84,7 @@ const CustomHeader = ({ title }) => {
       {/* Conditionally render the back button */}
       {routeName !== 'Login' && routeName !== 'Info' && (
         <TouchableOpacity onPress={handleBack}>
-          <Text style={styles.backButton}>Back</Text>
+          <Text style={styles.backButton}>Terug</Text>
         </TouchableOpacity>
       )}
       {/* Centered title */}

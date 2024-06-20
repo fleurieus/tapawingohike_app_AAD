@@ -6,6 +6,8 @@ import { Audio } from 'expo-av';
 import LocationUtils from '../utils/LocationUtils.js';
 import defaultImage from '../assets/tapaicon.png';
 import FinishRoutePartNotification from '../components/FinishRoutePartNotification';
+import RouteCompletionComponent from '../components/RouteCompletionComponent'; 
+
 
 const mockGetRouteParts = async () => {
   return [
@@ -77,7 +79,7 @@ const HikePage = () => {
       await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.Highest,
-          timeInterval: 10000,
+          timeInterval: 5000,
           distanceInterval: 0, // Disable distance-based updates
         },
         (location) => {
@@ -174,11 +176,7 @@ const HikePage = () => {
   };
 
   if (routeCompleted) {
-    return (
-      <View style={styles.fullScreenContainer}>
-        <Text style={styles.completionText}>Congratulations! You have completed the route.</Text>
-      </View>
-    );
+    return <RouteCompletionComponent />;
   }
 
   if (!currentRoutePart) {
@@ -228,7 +226,7 @@ const HikePage = () => {
         </MapView>
         {showNotification && (
           <FinishRoutePartNotification
-            message="You have reached the endpoint of this part of the route. Do you want to proceed to the next part?"
+            message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
             onNextPart={handleNextPart}
           />
         )}
@@ -273,7 +271,7 @@ const HikePage = () => {
       )}
       {showNotification && (
         <FinishRoutePartNotification
-          message="You have reached the endpoint of this part of the route. Do you want to proceed to the next part?"
+          message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
           onNextPart={handleNextPart}
         />
       )}
