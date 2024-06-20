@@ -10,12 +10,13 @@ import FinishRoutePartNotification from '../components/FinishRoutePartNotificati
 const mockGetRouteParts = () => {
   return [
     {
-      type: 'image',
+      type: 'image', // or 'image' or 'map' or 'audio'
       fullscreen: false,
-      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Example audio URL
       radius: 25,
       endpoint: { latitude: 37.421956, longitude: -122.084040 },
     },
+    // Add more route parts as needed
     {
       type: 'audio',
       fullscreen: false,
@@ -34,7 +35,7 @@ const HikePage = () => {
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Track loading state
+  const [routeCompleted, setRouteCompleted] = useState(false);
 
   const currentRoutePart = routeParts[currentRoutePartIndex];
 
@@ -91,8 +92,6 @@ const HikePage = () => {
               console.log('Destination reached, showing notification');
               setShowNotification(true);
             }
-          } else {
-            console.log("Error: No current route part");
           }
         }
       );
@@ -108,8 +107,6 @@ const HikePage = () => {
         }
       } catch (error) {
         console.error('Error fetching route parts:', error);
-      } finally {
-        setIsLoading(false); // Set loading state to false after fetching
       }
     };
 
@@ -160,15 +157,23 @@ const HikePage = () => {
   const handleNextPart = () => {
     console.log('Proceeding to the next part of the route');
     setShowNotification(false);
-    setCurrentRoutePartIndex((prevIndex) => prevIndex + 1);
+    if (currentRoutePartIndex < routeParts.length - 1) {
+      setCurrentRoutePartIndex((prevIndex) => prevIndex + 1);
+    } else {
+      setRouteCompleted(true);
+    }
   };
 
-  if (isLoading) { // Check isLoading state to show loading indicator
-    return <Text>Loading...</Text>;
+  if (routeCompleted) {
+    return (
+      <View style={styles.fullScreenContainer}>
+        <Text style={styles.completionText}>Congratulations! You have completed the route.</Text>
+      </View>
+    );
   }
 
-  if (routeParts.length === 0) {
-    return <Text>Error: No route parts available.</Text>;
+  if (!currentRoutePart) {
+    return <Text>Loading...</Text>;
   }
 
   if (currentRoutePart.type === 'image' && currentRoutePart.fullscreen) {
@@ -263,7 +268,7 @@ const HikePage = () => {
           onNextPart={handleNextPart}
         />
       )}
-       </View>
+    </View>
   );
 };
 
@@ -317,7 +322,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     margin: 5,
   },
+  completionText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
 });
 
 export default HikePage;
-
