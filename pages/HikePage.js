@@ -5,13 +5,14 @@ import * as Location from 'expo-location';
 import { Audio } from 'expo-av';
 import LocationUtils from '../utils/LocationUtils.js';
 import defaultImage from '../assets/tapaicon.png';
+import FinishRoutePartNotification from '../components/FinishRoutePartNotification';
 
 const mockGetRoutePart = async () => {
   return {
     type: 'image', // or 'image' or 'map' or 'audio'
     fullscreen: false,
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Example audio URL
-    radius: 25
+    radius: 25,
   };
 };
 
@@ -21,9 +22,8 @@ const HikePage = () => {
   const [routePart, setRoutePart] = useState(null);
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const endpoint = { latitude: 37.421956, longitude: -122.084040};
-
-  //37.421956, -122.084040 default google location
+  const [showNotification, setShowNotification] = useState(false);
+  const endpoint = { latitude: 37.421956, longitude: -122.084040 };
 
   useEffect(() => {
     const getCurrentLocation = async () => {
@@ -48,34 +48,39 @@ const HikePage = () => {
           longitudeDelta: 0.0421,
         });
 
-        await Location.watchPositionAsync(
-          {
-            accuracy: Location.Accuracy.Highest,
-            timeInterval: 10000,
-            distanceInterval: 0,
-          },
-          (location) => {
-            const { latitude, longitude } = location.coords;
-            console.log('Updated Location:', latitude, longitude);
-            setCurrentPosition({ latitude, longitude });
-            setRegion((prevRegion) => ({
-              ...prevRegion,
-              latitude,
-              longitude,
-            }));
-
-            // Calculate distance to endpoint and log it
-            const distance = LocationUtils.calculateDistance(latitude, longitude, endpoint.latitude, endpoint.longitude);
-            console.log('Distance to endpoint in meters:', distance);
-
-            if (distance < routePart.radius) {
-              console.log('destination reached');
-            }
-          }
-        );
       } catch (error) {
         console.error('Error fetching location:', error);
       }
+    };
+
+    const setupLocationWatcher = async () => {
+      await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.Highest,
+          timeInterval: 5000,
+          distanceInterval: 0, // Disable distance-based updates
+        },
+        (location) => {
+          const { latitude, longitude } = location.coords;
+          console.log('Updated Location:', latitude, longitude);
+          setCurrentPosition({ latitude, longitude });
+          setRegion((prevRegion) => ({
+            ...prevRegion,
+            latitude,
+            longitude,
+          }));
+
+          if (routePart) {
+            const distance = LocationUtils.calculateDistance(latitude, longitude, endpoint.latitude, endpoint.longitude);
+            console.log('Distance to endpoint in meters:', distance);
+
+            if (distance <= routePart.radius) {
+              console.log('Destination reached, showing notification');
+              setShowNotification(true);
+            }
+          }
+        }
+      );
     };
 
     const fetchRoutePart = async () => {
@@ -91,15 +96,20 @@ const HikePage = () => {
       }
     };
 
-    getCurrentLocation();
-    fetchRoutePart();
+    const initialize = async () => {
+      await getCurrentLocation();
+      await fetchRoutePart();
+      await setupLocationWatcher();
+    };
+
+    initialize();
 
     return () => {
       if (sound) {
         sound.unloadAsync();
       }
     };
-  }, []);
+  }, [routePart]);
 
   const playPauseAudio = async () => {
     if (sound) {
@@ -118,6 +128,17 @@ const HikePage = () => {
       const newPosition = Math.max(0, status.positionMillis - 10000); // Rewind 10 seconds
       await sound.setPositionAsync(newPosition);
     }
+  };
+
+  const handleDismiss = () => {
+    console.log('Notification dismissed');
+    setShowNotification(false);
+  };
+
+  const handleNextPart = () => {
+    console.log('Proceeding to the next part of the route');
+    setShowNotification(false);
+    // Logic to proceed to the next part of the route
   };
 
   if (!routePart) {
@@ -165,6 +186,13 @@ const HikePage = () => {
             <View style={[styles.circle, styles.redCircle]} />
           </Marker>
         </MapView>
+        {showNotification && (
+          <FinishRoutePartNotification
+            message="You have reached the endpoint of this part of the route. Do you want to proceed to the next part?"
+            onDismiss={handleDismiss}
+            onNextPart={handleNextPart}
+          />
+        )}
       </View>
     );
   }
@@ -204,6 +232,13 @@ const HikePage = () => {
       {!region && !routePart.fullscreen && (
         <Text>Loading...</Text>
       )}
+      {showNotification && (
+        <FinishRoutePartNotification
+          message="You have reached the endpoint of this part of the route. Do you want to proceed to the next part?"
+          onDismiss={handleDismiss}
+          onNextPart={handleNextPart}
+        />
+      )}
     </View>
   );
 };
@@ -211,59 +246,52 @@ const HikePage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   fullScreenContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  fullScreenImage: {
-    width: '100%',
-    height: '100%',
-  },
   halfScreenImage: {
     width: '100%',
     height: '50%',
   },
-  halfScreenAudio: {
+  fullScreenImage: {
     width: '100%',
-    height: '50%',
+    height: '100%',
+  },
+  halfScreenAudio: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   halfScreenMap: {
     width: '100%',
-    height: '50%', // Adjusted map height for half screen
+    height: '50%',
   },
   fullScreenMap: {
-    ...StyleSheet.absoluteFillObject, // Covering the entire screen
+    width: '100%',
+    height: '100%',
   },
   circle: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: 'white',
-    backgroundColor: 'transparent',
-  },
-  redCircle: {
-    backgroundColor: 'red',
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
   blueCircle: {
     backgroundColor: 'blue',
   },
+  redCircle: {
+    backgroundColor: 'red',
+  },
   audioPlayerContainer: {
-    flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
   },
   controlButton: {
-    margin: 10,
     padding: 10,
-    backgroundColor: '#ccc',
+    backgroundColor: '#007BFF',
     borderRadius: 5,
+    margin: 5,
   },
 });
 
