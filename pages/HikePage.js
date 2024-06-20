@@ -7,19 +7,25 @@ import LocationUtils from '../utils/LocationUtils.js';
 import defaultImage from '../assets/tapaicon.png';
 import FinishRoutePartNotification from '../components/FinishRoutePartNotification';
 
-const mockGetRouteParts = () => {
+const mockGetRouteParts = async () => {
   return [
     {
-      type: 'image', // or 'image' or 'map' or 'audio'
+      type: 'image', /// or 'image' or 'map' or 'audio'
       fullscreen: false,
       audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Example audio URL
       radius: 25,
       endpoint: { latitude: 37.421956, longitude: -122.084040 },
     },
-    // Add more route parts as needed
     {
       type: 'audio',
       fullscreen: false,
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+      radius: 25,
+      endpoint: { latitude: 37.422000, longitude: -122.085000 },
+    },
+    {
+      type: 'map',
+      fullscreen: true,
       audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
       radius: 25,
       endpoint: { latitude: 37.422000, longitude: -122.085000 },
@@ -92,6 +98,8 @@ const HikePage = () => {
               console.log('Destination reached, showing notification');
               setShowNotification(true);
             }
+          } else {
+            console.log("Error fetching routepart");
           }
         }
       );
