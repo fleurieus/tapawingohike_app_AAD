@@ -21,7 +21,9 @@ const HikePage = () => {
   const [routePart, setRoutePart] = useState(null);
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const endpoint = { latitude: 37.78825, longitude: -122.4324 };
+  const endpoint = { latitude: 37.421956, longitude: -122.084040};
+
+  //37.421956, -122.084040 default google location
 
   useEffect(() => {
     const getCurrentLocation = async () => {
@@ -49,8 +51,8 @@ const HikePage = () => {
         await Location.watchPositionAsync(
           {
             accuracy: Location.Accuracy.Highest,
-            timeInterval: 5000,
-            distanceInterval: 10,
+            timeInterval: 10000,
+            distanceInterval: 0,
           },
           (location) => {
             const { latitude, longitude } = location.coords;
@@ -65,6 +67,10 @@ const HikePage = () => {
             // Calculate distance to endpoint and log it
             const distance = LocationUtils.calculateDistance(latitude, longitude, endpoint.latitude, endpoint.longitude);
             console.log('Distance to endpoint in meters:', distance);
+
+            if (distance < routePart.radius) {
+              console.log('destination reached');
+            }
           }
         );
       } catch (error) {
