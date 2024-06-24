@@ -32,6 +32,8 @@ const routeParts = [
   },
 ];
 
+const dynamicBorderRadius = 10; 
+
 const HikePage = () => {
   const [currentPosition, setCurrentPosition] = useState(null);
   const [region, setRegion] = useState(null);
@@ -82,6 +84,7 @@ const HikePage = () => {
           const { latitude, longitude, accuracy } = location.coords;
           console.log('Updated Location:', latitude, longitude);
           console.log('Location Accuracy:', accuracy);
+          // dynamicBorderRadius = Math.floor(accuracy);
           setCurrentPosition({ latitude, longitude });
           setRegion((prevRegion) => ({
             ...prevRegion,
@@ -148,6 +151,14 @@ const HikePage = () => {
     }
   };
 
+  const stopAudio = async () => {
+    if (isPlaying) {
+      await sound.pauseAsync();
+      setIsPlaying(!isPlaying);
+    }
+};
+  
+
   const rewindAudio = async () => {
     if (sound) {
       const status = await sound.getStatusAsync();
@@ -164,6 +175,7 @@ const HikePage = () => {
     } else {
       setRouteCompleted(true);
     }
+    stopAudio();
   };
 
   if (routeCompleted) {
@@ -301,9 +313,9 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   circle: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: dynamicBorderRadius,
+    height: dynamicBorderRadius,
+    borderRadius: dynamicBorderRadius,
   },
   blueCircle: {
     backgroundColor: 'blue',
