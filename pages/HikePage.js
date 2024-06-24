@@ -6,39 +6,35 @@ import { Audio } from 'expo-av';
 import LocationUtils from '../utils/LocationUtils.js';
 import defaultImage from '../assets/tapaicon.png';
 import FinishRoutePartNotification from '../components/FinishRoutePartNotification';
-import RouteCompletionComponent from '../components/RouteCompletionComponent'; 
+import RouteCompletionComponent from '../components/RouteCompletionComponent';
 
-
-const mockGetRouteParts = async () => {
-  return [
-    {
-      type: 'image', ///////// or 'image' or 'map' or 'audio'
-      fullscreen: false,
-      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // Example audio URL
-      radius: 25,
-      endpoint: { latitude: 37.421956, longitude: -122.084040 },
-    },
-    {
-      type: 'audio',
-      fullscreen: false,
-      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-      radius: 25,
-      endpoint: { latitude: 37.422000, longitude: -122.085000 },
-    },
-    {
-      type: 'map',
-      fullscreen: true,
-      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-      radius: 25,
-      endpoint: { latitude: 37.422000, longitude: -122.085000 },
-    },
-  ];
-};
+const routeParts = [
+  {
+    type: 'image',
+    fullscreen: false,
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+    radius: 25,
+    endpoint: { latitude: 37.421956, longitude: -122.084040 },
+  },
+  {
+    type: 'audio',
+    fullscreen: false,
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+    radius: 25,
+    endpoint: { latitude: 37.422000, longitude: -122.085000 },
+  },
+  {
+    type: 'map',
+    fullscreen: true,
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+    radius: 25,
+    endpoint: { latitude: 37.422000, longitude: -122.085000 },
+  },
+];
 
 const HikePage = () => {
   const [currentPosition, setCurrentPosition] = useState(null);
   const [region, setRegion] = useState(null);
-  const [routeParts, setRouteParts] = useState([]);
   const [currentRoutePartIndex, setCurrentRoutePartIndex] = useState(0);
   const [sound, setSound] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -79,8 +75,8 @@ const HikePage = () => {
       await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.Highest,
-          timeInterval: 5000,
-          distanceInterval: 0, // Disable distance-based updates
+          timeInterval: 10000,
+          distanceInterval: 0,
         },
         (location) => {
           const { latitude, longitude } = location.coords;
@@ -101,30 +97,19 @@ const HikePage = () => {
               setShowNotification(true);
             }
           } else {
-            console.log("Error fetching routepart");
-            setShowNotification(true);
+            console.log("Error fetching route part again");
           }
         }
       );
     };
 
-    const fetchRouteParts = async () => {
-      try {
-        const response = await mockGetRouteParts();
-        setRouteParts(response);
-        if (response.length > 0 && response[0].type === 'audio') {
-          const { sound } = await Audio.Sound.createAsync({ uri: response[0].audioUrl });
-          setSound(sound);
-        }
-      } catch (error) {
-        console.error('Error fetching route parts:', error);
-      }
-    };
-
     const initialize = async () => {
-      await fetchRouteParts();
       await getCurrentLocation();
       await setupLocationWatcher();
+      if (routeParts.length > 0 && routeParts[0].type === 'audio') {
+        const { sound } = await Audio.Sound.createAsync({ uri: routeParts[0].audioUrl });
+        setSound(sound);
+      }
     };
 
     initialize();
@@ -160,7 +145,7 @@ const HikePage = () => {
   const rewindAudio = async () => {
     if (sound) {
       const status = await sound.getStatusAsync();
-      const newPosition = Math.max(0, status.positionMillis - 10000); // Rewind 10 seconds
+      const newPosition = Math.max(0, status.positionMillis - 10000);
       await sound.setPositionAsync(newPosition);
     }
   };
