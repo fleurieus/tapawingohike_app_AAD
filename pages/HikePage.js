@@ -75,29 +75,35 @@ const HikePage = () => {
       await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.Highest,
-          timeInterval: 10000,
+          timeInterval: 5000,
           distanceInterval: 0,
         },
         (location) => {
-          const { latitude, longitude } = location.coords;
+          const { latitude, longitude, accuracy } = location.coords;
           console.log('Updated Location:', latitude, longitude);
+          console.log('Location Accuracy:', accuracy);
           setCurrentPosition({ latitude, longitude });
           setRegion((prevRegion) => ({
             ...prevRegion,
             latitude,
             longitude,
           }));
-
+    
           if (currentRoutePart) {
-            const distance = LocationUtils.calculateDistance(latitude, longitude, currentRoutePart.endpoint.latitude, currentRoutePart.endpoint.longitude);
+            const distance = LocationUtils.calculateDistance(
+              latitude,
+              longitude,
+              currentRoutePart.endpoint.latitude,
+              currentRoutePart.endpoint.longitude
+            );
             console.log('Distance to endpoint in meters:', distance);
-
+    
             if (distance <= currentRoutePart.radius) {
               console.log('Destination reached, showing notification');
               setShowNotification(true);
             }
           } else {
-            console.log("Error fetching route part again");
+            console.log('Error fetching route part');
           }
         }
       );
