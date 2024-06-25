@@ -197,8 +197,19 @@ const HikePage = () => {
   };
 
   if (routeCompleted) {
-    return <RouteCompletionComponent />;
+    return (
+      <View style={{ flex: 1 }}>
+        <CustomHeader title="Route Complete" />
+        <RouteCompletionComponent 
+          onBackToPrevious={() => {
+            setRouteCompleted(false);
+            setCurrentRoutePartIndex(routeParts.length - 1); // Go back to the last part of the route
+          }} 
+        />
+      </View>
+    );
   }
+  
 
   if (!currentRoutePart) {
     return <Text>Loading...</Text>;

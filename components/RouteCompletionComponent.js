@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const RouteCompletionComponent = () => {
+const RouteCompletionComponent = ({ onBackToPrevious }) => {
   const navigation = useNavigation();
 
   const handleBackToLogin = () => {
@@ -16,6 +16,9 @@ const RouteCompletionComponent = () => {
         <Text style={styles.completionText}>Je hebt de route voltooid.</Text>
         <TouchableOpacity onPress={handleBackToLogin} style={styles.button}>
           <Text style={styles.buttonText}>Terug naar Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onBackToPrevious} style={styles.button}>
+          <Text style={styles.buttonText}>Terug naar vorige deel</Text>
         </TouchableOpacity>
       </View>
     </View>
