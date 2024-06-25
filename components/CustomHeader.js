@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 
-const CustomHeader = ({ title }) => {
+const CustomHeader = ({ title, onNext, onPrevious }) => {
   const navigation = useNavigation();
   const route = useRoute();
   const { name: routeName } = route;
@@ -28,10 +28,7 @@ const CustomHeader = ({ title }) => {
         },
         {
           text: 'OK',
-          onPress: () => {
-            // Handle the undo action here
-            console.log('Undo action confirmed');
-          },
+          onPress: onPrevious,
         },
       ],
       { cancelable: true }
@@ -50,10 +47,7 @@ const CustomHeader = ({ title }) => {
         },
         {
           text: 'OK',
-          onPress: () => {
-            // Handle the next action here
-            console.log('Next action confirmed');
-          },
+          onPress: onNext,
         },
       ],
       { cancelable: true }

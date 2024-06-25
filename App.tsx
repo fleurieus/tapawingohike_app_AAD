@@ -89,17 +89,26 @@ export default function App() {
         <Stack.Screen 
           name="Login" 
           component={LoginScreen} 
-          options={{ header: () => <CustomHeader title="Login" /> }} // Add custom header
+          options={{ 
+            headerShown: true, // Hide default header
+            header: () => <CustomHeader title="Login" /> // Add custom header
+          }} 
         />
         <Stack.Screen 
           name="Hike" 
           component={HikePage} 
-          options={{ header: () => <CustomHeader title="Hike" /> }} // Add custom header
+          options={{ 
+            headerShown: false, // Hide default header
+            header: () => <CustomHeader title="Hike" /> // Add custom header
+          }} 
         />
         <Stack.Screen 
           name="Info" 
           component={InfoPage} 
-          options={{ header: () => <CustomHeader title="Info" /> }} // Add custom header
+          options={{ 
+            headerShown: true, // Hide default header
+            header: () => <CustomHeader title="Info" /> // Add custom header
+          }} 
         />
       </Stack.Navigator>
     </NavigationContainer>

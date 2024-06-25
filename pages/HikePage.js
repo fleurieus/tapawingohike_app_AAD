@@ -7,18 +7,19 @@ import LocationUtils from '../utils/LocationUtils.js';
 import defaultImage from '../assets/tapaicon.png';
 import FinishRoutePartNotification from '../components/FinishRoutePartNotification';
 import RouteCompletionComponent from '../components/RouteCompletionComponent';
+import CustomHeader from '../components/CustomHeader';
 
 const routeParts = [
   {
     type: 'image',
-    fullscreen: true,
+    fullscreen: false,
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     radius: 25,
     endpoint: { latitude: 37.421956, longitude: -122.084040 },
   },
   {
     type: 'audio',
-    fullscreen: true,
+    fullscreen: false,
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
     radius: 25,
     endpoint: { latitude: 37.422000, longitude: -122.085000 },
@@ -178,6 +179,12 @@ const HikePage = () => {
     stopAudio();
   };
 
+  const handlePreviousPart = () => {
+    if (currentRoutePartIndex > 0) {
+      setCurrentRoutePartIndex((prevIndex) => prevIndex - 1);
+    }
+  };
+
   const centerOnCurrentLocation = () => {
     if (currentPosition) {
       setRegion({
@@ -200,6 +207,11 @@ const HikePage = () => {
   if (currentRoutePart.type === 'image' && currentRoutePart.fullscreen) {
     return (
       <View style={styles.fullScreenContainer}>
+        <CustomHeader
+          title="Hike"
+          onNext={handleNextPart}
+          onPrevious={handlePreviousPart}
+        />
         <Image source={defaultImage} style={styles.fullScreenImage} />
         {showNotification && (
           <FinishRoutePartNotification
@@ -215,6 +227,11 @@ const HikePage = () => {
   if (currentRoutePart.type === 'audio' && currentRoutePart.fullscreen) {
     return (
       <View style={styles.fullScreenContainer}>
+        <CustomHeader
+          title="Hike"
+          onNext={handleNextPart}
+          onPrevious={handlePreviousPart}
+        />
         <View style={styles.audioPlayerContainer}>
           <Text>Playing Audio...</Text>
           <TouchableOpacity onPress={playPauseAudio} style={styles.controlButton}>
@@ -238,6 +255,11 @@ const HikePage = () => {
   if (currentRoutePart.type === 'map' && currentRoutePart.fullscreen) {
     return (
       <View style={styles.fullScreenContainer}>
+        <CustomHeader
+          title="Hike"
+          onNext={handleNextPart}
+          onPrevious={handlePreviousPart}
+        />
         <MapView
           style={styles.fullScreenMap}
           region={region}
@@ -253,7 +275,7 @@ const HikePage = () => {
           </Marker>
         </MapView>
         <TouchableOpacity onPress={centerOnCurrentLocation} style={styles.centerButton}>
-          <Text style={styles.centerButtonText}>Center op huidige locatie</Text>
+          <Text style={styles.centerButtonText}>Center on Current Location</Text>
         </TouchableOpacity>
         {showNotification && (
           <FinishRoutePartNotification
@@ -268,6 +290,11 @@ const HikePage = () => {
 
   return (
     <View style={styles.container}>
+      <CustomHeader
+        title="Hike"
+        onNext={handleNextPart}
+        onPrevious={handlePreviousPart}
+      />
       {currentRoutePart.type === 'image' && !currentRoutePart.fullscreen && (
         <Image source={defaultImage} style={styles.halfScreenImage} />
       )}
@@ -302,7 +329,7 @@ const HikePage = () => {
         <Text>Loading...</Text>
       )}
       <TouchableOpacity onPress={centerOnCurrentLocation} style={styles.centerButton}>
-        <Text style={styles.centerButtonText}>Center op huidige locatie</Text>
+        <Text style={styles.centerButtonText}>Center on Current Location</Text>
       </TouchableOpacity>
       {showNotification && (
         <FinishRoutePartNotification
@@ -343,7 +370,7 @@ const styles = StyleSheet.create({
   },
   fullScreenMap: {
     width: '100%',
-    height: '100%',
+    height: '90%',
   },
   circle: {
     width: dynamicBorderRadius,
