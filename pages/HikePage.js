@@ -11,14 +11,14 @@ import RouteCompletionComponent from '../components/RouteCompletionComponent';
 const routeParts = [
   {
     type: 'image',
-    fullscreen: false,
+    fullscreen: true,
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     radius: 25,
     endpoint: { latitude: 37.421956, longitude: -122.084040 },
   },
   {
     type: 'audio',
-    fullscreen: false,
+    fullscreen: true,
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
     radius: 25,
     endpoint: { latitude: 37.422000, longitude: -122.085000 },
@@ -201,6 +201,13 @@ const HikePage = () => {
     return (
       <View style={styles.fullScreenContainer}>
         <Image source={defaultImage} style={styles.fullScreenImage} />
+        {showNotification && (
+          <FinishRoutePartNotification
+            message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
+            onNextPart={handleNextPart}
+            style={styles.notification}
+          />
+        )}
       </View>
     );
   }
@@ -217,6 +224,13 @@ const HikePage = () => {
             <Text>Rewind</Text>
           </TouchableOpacity>
         </View>
+        {showNotification && (
+          <FinishRoutePartNotification
+            message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
+            onNextPart={handleNextPart}
+            style={styles.notification}
+          />
+        )}
       </View>
     );
   }
@@ -239,12 +253,13 @@ const HikePage = () => {
           </Marker>
         </MapView>
         <TouchableOpacity onPress={centerOnCurrentLocation} style={styles.centerButton}>
-          <Text style={styles.centerButtonText}>Center op huidige locatie</Text>
+          <Text style={styles.centerButtonText}>Center on Current Location</Text>
         </TouchableOpacity>
         {showNotification && (
           <FinishRoutePartNotification
             message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
             onNextPart={handleNextPart}
+            style={styles.notification}
           />
         )}
       </View>
@@ -287,12 +302,13 @@ const HikePage = () => {
         <Text>Loading...</Text>
       )}
       <TouchableOpacity onPress={centerOnCurrentLocation} style={styles.centerButton}>
-        <Text style={styles.centerButtonText}>Center op huidige locatie</Text>
+        <Text style={styles.centerButtonText}>Center on Current Location</Text>
       </TouchableOpacity>
       {showNotification && (
         <FinishRoutePartNotification
           message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
           onNextPart={handleNextPart}
+          style={styles.notification}
         />
       )}
     </View>
@@ -365,6 +381,17 @@ const styles = StyleSheet.create({
   centerButtonText: {
     color: '#FFF',
     fontWeight: 'bold',
+  },
+  notification: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -150 }, { translateY: -50 }],
+    width: 300,
+    padding: 10,
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    elevation: 5,
   },
 });
 
