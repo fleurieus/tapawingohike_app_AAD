@@ -187,6 +187,7 @@ const handleDismissNotification = () => {
     if (currentRoutePartIndex > 0) {
       setCurrentRoutePartIndex((prevIndex) => prevIndex - 1);
     }
+    stopAudio();
   };
 
   const centerOnCurrentLocation = () => {
