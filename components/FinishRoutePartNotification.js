@@ -8,7 +8,7 @@ const FinishRoutePartNotification = ({ message, onNextPart }) => {
         <Text style={styles.message}>{message}</Text>
         <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={onNextPart} style={styles.button}>
-            <Text style={styles.buttonText}>Next Part</Text>
+            <Text style={styles.buttonText}>Volgende</Text>
           </TouchableOpacity>
         </View>
       </View>
