@@ -12,7 +12,7 @@ import CustomHeader from '../components/CustomHeader';
 const routeParts = [
   {
     type: 'image',
-    fullscreen: false,
+    fullscreen: true,
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     radius: 25,
     endpoint: { latitude: 37.421956, longitude: -122.084040 },
@@ -44,6 +44,8 @@ const HikePage = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [routeCompleted, setRouteCompleted] = useState(false);
   let [routePartEndNotificationShown, setRoutePartEndNotificationShown] = useState(false); // Boolean to track if notification has been shown for current route part
+  let [initialCentered, setInitialCentered] = useState(false); // New state to track initial centering
+
 
   const currentRoutePart = routeParts[currentRoutePartIndex];
 
@@ -76,45 +78,49 @@ const HikePage = () => {
     };
 
     const setupLocationWatcher = async () => {
-      await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.Highest,
-          timeInterval: 15000,
-          distanceInterval: 0,
-        },
-        (location) => {
-          const { latitude, longitude, accuracy } = location.coords;
-          console.log('Updated Location:', latitude, longitude);
-          console.log('Location Accuracy:', accuracy);
-          // dynamicBorderRadius = Math.floor(accuracy);
-          setCurrentPosition({ latitude, longitude });
-          setRegion((prevRegion) => ({
-            ...prevRegion,
-            latitude,
-            longitude,
-          }));
-
-          if (currentRoutePart) {
-            const distance = LocationUtils.calculateDistance(
-              latitude,
-              longitude,
-              currentRoutePart.endpoint.latitude,
-              currentRoutePart.endpoint.longitude
-            );
-            console.log('Distance to endpoint in meters:', distance);
-
-            if (distance <= currentRoutePart.radius) {
-              console.log('Destination reached, showing notification');
-              if (!routePartEndNotificationShown) {
-                setShowNotification(true);
+      try {
+        await Location.watchPositionAsync(
+          {
+            accuracy: Location.Accuracy.Highest,
+            timeInterval: 15000,
+            distanceInterval: 0,
+          },
+          (location) => {
+            const { latitude, longitude, accuracy } = location.coords;
+            console.log('Updated Location:', latitude, longitude);
+            console.log('Location Accuracy:', accuracy);
+            // dynamicBorderRadius = Math.floor(accuracy);
+            setCurrentPosition({ latitude, longitude });
+    
+            if (currentRoutePart) {
+              const distance = LocationUtils.calculateDistance(
+                latitude,
+                longitude,
+                currentRoutePart.endpoint.latitude,
+                currentRoutePart.endpoint.longitude
+              );
+              console.log('Distance to endpoint in meters:', distance);
+    
+              if (distance <= currentRoutePart.radius) {
+                console.log('Destination reached, showing notification');
+                if (!routePartEndNotificationShown) {
+                  setShowNotification(true);
+                }
+                console.log(routePartEndNotificationShown);
               }
-              console.log(routePartEndNotificationShown);
+            } else {
+              console.log('Error fetching route part');
             }
-          } else {
-            console.log('Error fetching route part');
           }
+        );
+        if (!initialCentered) {
+          setRegion({ latitude, longitude });
+          setInitialCentered(true); // Set initial centering done
+          centerOnCurrentLocation();
         }
-      );
+      } catch (error) {
+        console.log('Error setting up location watcher:', error);
+      }
     };
 
     const initialize = async () => {
@@ -127,6 +133,7 @@ const HikePage = () => {
     };
 
     initialize();
+
 
     return () => {
       if (sound) {
