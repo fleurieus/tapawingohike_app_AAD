@@ -199,7 +199,6 @@ const HikePage = () => {
   if (routeCompleted) {
     return (
       <View style={{ flex: 1 }}>
-        <CustomHeader title="Route Complete" />
         <RouteCompletionComponent 
           onBackToPrevious={() => {
             setRouteCompleted(false);
