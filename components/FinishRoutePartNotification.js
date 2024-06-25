@@ -1,12 +1,15 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const FinishRoutePartNotification = ({ message, onNextPart }) => {
+const FinishRoutePartNotification = ({ message, onNextPart, onDismiss }) => {
   return (
     <View style={styles.overlay}>
       <View style={styles.notification}>
         <Text style={styles.message}>{message}</Text>
         <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={onDismiss} style={[styles.button, styles.dismissButton]}>
+            <Text style={styles.buttonText}>Sluiten</Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={onNextPart} style={styles.button}>
             <Text style={styles.buttonText}>Volgende</Text>
           </TouchableOpacity>
@@ -48,6 +51,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#007BFF',
     borderRadius: 5,
     margin: 5,
+  },
+  dismissButton: {
+    backgroundColor: '#8B0000', // Dark Red color
   },
   buttonText: {
     color: 'white',

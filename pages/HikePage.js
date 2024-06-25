@@ -12,7 +12,7 @@ import CustomHeader from '../components/CustomHeader';
 const routeParts = [
   {
     type: 'image',
-    fullscreen: false,
+    fullscreen: true,
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     radius: 25,
     endpoint: { latitude: 37.421956, longitude: -122.084040 },
@@ -158,6 +158,10 @@ const HikePage = () => {
       setIsPlaying(!isPlaying);
     }
 };
+
+const handleDismissNotification = () => {
+  setShowNotification(false);
+};
   
 
   const rewindAudio = async () => {
@@ -225,10 +229,11 @@ const HikePage = () => {
         <Image source={defaultImage} style={styles.fullScreenImage} />
         {showNotification && (
           <FinishRoutePartNotification
-            message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
-            onNextPart={handleNextPart}
-            style={styles.notification}
-          />
+          message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
+          onNextPart={handleNextPart}
+          onDismiss={handleDismissNotification}
+          style={styles.notification}
+        />
         )}
       </View>
     );
@@ -253,10 +258,12 @@ const HikePage = () => {
         </View>
         {showNotification && (
           <FinishRoutePartNotification
-            message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
-            onNextPart={handleNextPart}
-            style={styles.notification}
-          />
+          message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
+          onNextPart={handleNextPart}
+          onDismiss={handleDismissNotification}
+          style={styles.notification}
+        />
+
         )}
       </View>
     );
@@ -289,10 +296,12 @@ const HikePage = () => {
         </TouchableOpacity>
         {showNotification && (
           <FinishRoutePartNotification
-            message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
-            onNextPart={handleNextPart}
-            style={styles.notification}
-          />
+          message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
+          onNextPart={handleNextPart}
+          onDismiss={handleDismissNotification}
+          style={styles.notification}
+        />
+
         )}
       </View>
     );
@@ -343,10 +352,12 @@ const HikePage = () => {
       </TouchableOpacity>
       {showNotification && (
         <FinishRoutePartNotification
-          message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
-          onNextPart={handleNextPart}
-          style={styles.notification}
-        />
+        message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
+        onNextPart={handleNextPart}
+        onDismiss={handleDismissNotification}
+        style={styles.notification}
+      />
+
       )}
     </View>
   );
@@ -367,7 +378,7 @@ const styles = StyleSheet.create({
   },
   fullScreenImage: {
     width: '100%',
-    height: '100%',
+    height: '90%',
   },
   halfScreenAudio: {
     flex: 1,
@@ -379,7 +390,7 @@ const styles = StyleSheet.create({
     height: '50%',
   },
   fullScreenMap: {
-    width: '100%',
+    width: '90%',
     height: '90%',
   },
   circle: {
