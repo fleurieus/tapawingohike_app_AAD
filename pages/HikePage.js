@@ -178,6 +178,17 @@ const HikePage = () => {
     stopAudio();
   };
 
+  const centerOnCurrentLocation = () => {
+    if (currentPosition) {
+      setRegion({
+        latitude: currentPosition.latitude,
+        longitude: currentPosition.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      });
+    }
+  };
+
   if (routeCompleted) {
     return <RouteCompletionComponent />;
   }
@@ -227,6 +238,9 @@ const HikePage = () => {
             <View style={[styles.circle, styles.redCircle]} />
           </Marker>
         </MapView>
+        <TouchableOpacity onPress={centerOnCurrentLocation} style={styles.centerButton}>
+          <Text style={styles.centerButtonText}>Center</Text>
+        </TouchableOpacity>
         {showNotification && (
           <FinishRoutePartNotification
             message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
@@ -272,6 +286,9 @@ const HikePage = () => {
       {!region && !currentRoutePart.fullscreen && (
         <Text>Loading...</Text>
       )}
+      <TouchableOpacity onPress={centerOnCurrentLocation} style={styles.centerButton}>
+        <Text style={styles.centerButtonText}>Center on Current Location</Text>
+      </TouchableOpacity>
       {showNotification && (
         <FinishRoutePartNotification
           message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
@@ -334,6 +351,19 @@ const styles = StyleSheet.create({
   },
   completionText: {
     fontSize: 20,
+    fontWeight: 'bold',
+  },
+  centerButton: {
+    position: 'absolute',
+    bottom: 20,
+    left: '50%',
+    transform: [{ translateX: -75 }],
+    padding: 10,
+    backgroundColor: '#007BFF',
+    borderRadius: 5,
+  },
+  centerButtonText: {
+    color: '#FFF',
     fontWeight: 'bold',
   },
 });
