@@ -239,7 +239,7 @@ const HikePage = () => {
           </Marker>
         </MapView>
         <TouchableOpacity onPress={centerOnCurrentLocation} style={styles.centerButton}>
-          <Text style={styles.centerButtonText}>Center</Text>
+          <Text style={styles.centerButtonText}>Center op huidige locatie</Text>
         </TouchableOpacity>
         {showNotification && (
           <FinishRoutePartNotification
@@ -287,7 +287,7 @@ const HikePage = () => {
         <Text>Loading...</Text>
       )}
       <TouchableOpacity onPress={centerOnCurrentLocation} style={styles.centerButton}>
-        <Text style={styles.centerButtonText}>Center on Current Location</Text>
+        <Text style={styles.centerButtonText}>Center op huidige locatie</Text>
       </TouchableOpacity>
       {showNotification && (
         <FinishRoutePartNotification
