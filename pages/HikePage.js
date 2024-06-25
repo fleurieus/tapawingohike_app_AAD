@@ -12,7 +12,7 @@ import CustomHeader from '../components/CustomHeader';
 const routeParts = [
   {
     type: 'image',
-    fullscreen: true,
+    fullscreen: false,
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     radius: 25,
     endpoint: { latitude: 37.421956, longitude: -122.084040 },
@@ -33,7 +33,7 @@ const routeParts = [
   },
 ];
 
-const dynamicBorderRadius = 10; 
+const dynamicBorderRadius = 10;
 
 const HikePage = () => {
   const [currentPosition, setCurrentPosition] = useState(null);
@@ -43,6 +43,7 @@ const HikePage = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [routeCompleted, setRouteCompleted] = useState(false);
+  let [routePartEndNotificationShown, setRoutePartEndNotificationShown] = useState(false); // Boolean to track if notification has been shown for current route part
 
   const currentRoutePart = routeParts[currentRoutePartIndex];
 
@@ -92,7 +93,7 @@ const HikePage = () => {
             latitude,
             longitude,
           }));
-    
+
           if (currentRoutePart) {
             const distance = LocationUtils.calculateDistance(
               latitude,
@@ -101,10 +102,13 @@ const HikePage = () => {
               currentRoutePart.endpoint.longitude
             );
             console.log('Distance to endpoint in meters:', distance);
-    
+
             if (distance <= currentRoutePart.radius) {
               console.log('Destination reached, showing notification');
-              setShowNotification(true);
+              if (!routePartEndNotificationShown) {
+                setShowNotification(true);
+              }
+              console.log(routePartEndNotificationShown);
             }
           } else {
             console.log('Error fetching route part');
@@ -157,12 +161,15 @@ const HikePage = () => {
       await sound.pauseAsync();
       setIsPlaying(!isPlaying);
     }
-};
+  };
 
-const handleDismissNotification = () => {
-  setShowNotification(false);
-};
-  
+  const handleDismissNotification = () => {
+    setShowNotification(false);
+    setRoutePartEndNotificationShown(true)
+    console.log("setting setRoutePartEndNotificaion to true");
+    console.log(routePartEndNotificationShown);
+  };
+
 
   const rewindAudio = async () => {
     if (sound) {
@@ -181,6 +188,7 @@ const handleDismissNotification = () => {
       setRouteCompleted(true);
     }
     stopAudio();
+    setRoutePartEndNotificationShown(false)
   };
 
   const handlePreviousPart = () => {
@@ -188,6 +196,7 @@ const handleDismissNotification = () => {
       setCurrentRoutePartIndex((prevIndex) => prevIndex - 1);
     }
     stopAudio();
+    setRoutePartEndNotificationShown(false)
   };
 
   const centerOnCurrentLocation = () => {
@@ -204,16 +213,16 @@ const handleDismissNotification = () => {
   if (routeCompleted) {
     return (
       <View style={{ flex: 1 }}>
-        <RouteCompletionComponent 
+        <RouteCompletionComponent
           onBackToPrevious={() => {
             setRouteCompleted(false);
             setCurrentRoutePartIndex(routeParts.length - 1); // Go back to the last part of the route
-          }} 
+          }}
         />
       </View>
     );
   }
-  
+
 
   if (!currentRoutePart) {
     return <Text>Loading...</Text>;
@@ -228,14 +237,15 @@ const handleDismissNotification = () => {
           onPrevious={handlePreviousPart}
         />
         <Image source={defaultImage} style={styles.fullScreenImage} />
-        {showNotification && (
+        {showNotification && !routePartEndNotificationShown && (
           <FinishRoutePartNotification
-          message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
-          onNextPart={handleNextPart}
-          onDismiss={handleDismissNotification}
-          style={styles.notification}
-        />
+            message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
+            onNextPart={handleNextPart}
+            onDismiss={handleDismissNotification}
+            style={styles.notification}
+          />
         )}
+
       </View>
     );
   }
@@ -257,14 +267,13 @@ const handleDismissNotification = () => {
             <Text>Rewind</Text>
           </TouchableOpacity>
         </View>
-        {showNotification && (
+        {showNotification && !routePartEndNotificationShown && (
           <FinishRoutePartNotification
-          message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
-          onNextPart={handleNextPart}
-          onDismiss={handleDismissNotification}
-          style={styles.notification}
-        />
-
+            message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
+            onNextPart={handleNextPart}
+            onDismiss={handleDismissNotification}
+            style={styles.notification}
+          />
         )}
       </View>
     );
@@ -293,16 +302,15 @@ const handleDismissNotification = () => {
           </Marker>
         </MapView>
         <TouchableOpacity onPress={centerOnCurrentLocation} style={styles.centerButton}>
-          <Text style={styles.centerButtonText}>Center on Current Location</Text>
+          <Text style={styles.centerButtonText}>Center</Text>
         </TouchableOpacity>
-        {showNotification && (
+        {showNotification && !routePartEndNotificationShown && (
           <FinishRoutePartNotification
-          message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
-          onNextPart={handleNextPart}
-          onDismiss={handleDismissNotification}
-          style={styles.notification}
-        />
-
+            message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
+            onNextPart={handleNextPart}
+            onDismiss={handleDismissNotification}
+            style={styles.notification}
+          />
         )}
       </View>
     );
@@ -349,17 +357,16 @@ const handleDismissNotification = () => {
         <Text>Loading...</Text>
       )}
       <TouchableOpacity onPress={centerOnCurrentLocation} style={styles.centerButton}>
-        <Text style={styles.centerButtonText}>Center on Current Location</Text>
+        <Text style={styles.centerButtonText}>Center</Text>
       </TouchableOpacity>
-      {showNotification && (
-        <FinishRoutePartNotification
-        message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
-        onNextPart={handleNextPart}
-        onDismiss={handleDismissNotification}
-        style={styles.notification}
-      />
-
-      )}
+      {showNotification && !routePartEndNotificationShown && (
+          <FinishRoutePartNotification
+            message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
+            onNextPart={handleNextPart}
+            onDismiss={handleDismissNotification}
+            style={styles.notification}
+          />
+        )}
     </View>
   );
 };
@@ -391,7 +398,7 @@ const styles = StyleSheet.create({
     height: '50%',
   },
   fullScreenMap: {
-    width: '90%',
+    width: '100%',
     height: '90%',
   },
   circle: {
@@ -426,6 +433,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#007BFF',
     borderRadius: 5,
+    marginLeft: 50
   },
   centerButtonText: {
     color: '#FFF',
