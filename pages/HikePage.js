@@ -8,6 +8,7 @@ import defaultImage from '../assets/tapaicon.png';
 import FinishRoutePartNotification from '../components/FinishRoutePartNotification';
 import RouteCompletionComponent from '../components/RouteCompletionComponent';
 import CustomHeader from '../components/CustomHeader';
+import Slider from '@react-native-community/slider';
 
 const routeParts = [
   {
@@ -48,6 +49,10 @@ const HikePage = () => {
   const [routeCompleted, setRouteCompleted] = useState(false);
   let [routePartEndNotificationShown, setRoutePartEndNotificationShown] = useState(false); // Boolean to track if notification has been shown for current route part
   let [initialCentered, setInitialCentered] = useState(false); // New state to track initial centering
+  const [audioStatus, setAudioStatus] = useState({
+    position: 0,
+    duration: 0,
+  });
 
 
   const currentRoutePart = routeParts[currentRoutePartIndex];
@@ -150,6 +155,7 @@ const HikePage = () => {
       const loadAudio = async () => {
         const { sound } = await Audio.Sound.createAsync({ uri: currentRoutePart.audioUrl });
         setSound(sound);
+        sound.setOnPlaybackStatusUpdate(updateAudioStatus);
       };
       loadAudio();
     }
@@ -170,6 +176,22 @@ const HikePage = () => {
     if (isPlaying) {
       await sound.pauseAsync();
       setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleSliderValueChange = async (value) => {
+    if (sound) {
+      await sound.setPositionAsync(value);
+    }
+  };
+
+
+  const updateAudioStatus = (status) => {
+    if (status.isLoaded) {
+      setAudioStatus({
+        position: status.positionMillis,
+        duration: status.durationMillis,
+      });
     }
   };
 
@@ -343,15 +365,25 @@ const HikePage = () => {
         <Image source={defaultImage} style={styles.halfScreenImage} />
       )}
       {currentRoutePart.type === 'audio' && !currentRoutePart.fullscreen && (
-        <View style={styles.halfScreenAudio}>
-          <Text>Playing Audio...</Text>
-          <TouchableOpacity onPress={playPauseAudio} style={styles.controlButton}>
-            <Text>{isPlaying ? 'Pause' : 'Play'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={rewindAudio} style={styles.controlButton}>
-            <Text>Rewind</Text>
-          </TouchableOpacity>
-        </View>
+        <View style={styles.audioPlayerContainer}>
+        <Text>Playing Audio...</Text>
+        <TouchableOpacity onPress={playPauseAudio} style={styles.controlButton}>
+          <Text>{isPlaying ? 'Pause' : 'Play'}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={rewindAudio} style={styles.controlButton}>
+          <Text>Rewind</Text>
+        </TouchableOpacity>
+        <Slider
+          style={{ width: 200, height: 40 }}
+          minimumValue={0}
+          maximumValue={audioStatus.duration}
+          value={audioStatus.position}
+          onSlidingComplete={handleSliderValueChange}
+        />
+        <Text>
+          {Math.floor(audioStatus.position / 1000)} / {Math.floor(audioStatus.duration / 1000)} seconds
+        </Text>
+      </View>
       )}
       {region && !currentRoutePart.fullscreen && (
         <MapView
@@ -465,6 +497,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderRadius: 10,
     elevation: 5,
+  },
+  controlButton: {
+    margin: 10,
+    padding: 10,
+    backgroundColor: '#007AFF',
+    borderRadius: 5,
+  },
+  notification: {
+    position: 'absolute',
+    bottom: 20,
+    left: 20,
+    right: 20,
   },
 });
 
