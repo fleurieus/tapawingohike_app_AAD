@@ -33,8 +33,8 @@ const RouteCompletionComponent = ({ onBackToPrevious }) => {
       {/* Render ConfettiCannon component with a ref */}
       <ConfettiCannon
         ref={confettiRef}
-        count={500}
-        origin={{ x: 50, y: 0 }}
+        count={200}
+        origin={{ x: -10, y: 0 }}
         fadeOut={true}
       />
     </View>
