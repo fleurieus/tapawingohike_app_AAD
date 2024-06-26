@@ -91,7 +91,7 @@ export default function App() {
           component={LoginScreen} 
           options={{ 
             headerShown: true, // Hide default header
-            header: () => <CustomHeader title="Login" onNext={undefined} onPrevious={undefined} canProceedToNext={undefined} /> // Add custom header
+            header: () => <CustomHeader title="Login" onNext={undefined} onPrevious={undefined} canProceedToNext={undefined} backToLogin={undefined} /> // Add custom header
           }} 
         />
         <Stack.Screen 
@@ -99,7 +99,7 @@ export default function App() {
           component={HikePage} 
           options={{ 
             headerShown: false, // Hide default header
-            header: () => <CustomHeader title="Hike" onNext={undefined} onPrevious={undefined} canProceedToNext={undefined} /> // Add custom header
+            header: () => <CustomHeader title="Hike" onNext={undefined} onPrevious={undefined} canProceedToNext={undefined} backToLogin={undefined} /> // Add custom header
           }} 
         />
         <Stack.Screen 
@@ -107,7 +107,7 @@ export default function App() {
           component={InfoPage} 
           options={{ 
             headerShown: true, // Hide default header
-            header: () => <CustomHeader title="Info" onNext={undefined} onPrevious={undefined} canProceedToNext={undefined} /> // Add custom header
+            header: () => <CustomHeader title="Info" onNext={undefined} onPrevious={undefined} canProceedToNext={undefined} backToLogin={undefined} /> // Add custom header
           }} 
         />
       </Stack.Navigator>
