@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 
-const CustomHeader = ({ title, onNext, onPrevious, canProceedToNext }) => {
+const CustomHeader = ({ title, onNext, onPrevious, canProceedToNext, backToLogin }) => {
   const navigation = useNavigation();
   const route = useRoute();
   const { name: routeName } = route;
@@ -12,6 +12,7 @@ const CustomHeader = ({ title, onNext, onPrevious, canProceedToNext }) => {
     if (routeName !== 'Login') {
       navigation.goBack();
     }
+    backToLogin();
   };
 
   const handleUndoAction = () => {
