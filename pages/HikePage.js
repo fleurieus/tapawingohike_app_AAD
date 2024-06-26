@@ -93,7 +93,6 @@ const HikePage = () => {
           longitudeDelta: 0.0421,
         });
 
-        // Set initial distance to endpoint
         const initialDist = LocationUtils.calculateDistance(
           latitude,
           longitude,
@@ -265,7 +264,12 @@ const HikePage = () => {
   };
 
   if (routeCompleted) {
-    return <RouteCompletionComponent />;
+    return<RouteCompletionComponent
+    onBackToPrevious={() => {
+      setRouteCompleted(false);
+      setCurrentRoutePartIndex(routeParts.length - 1); // Go back to the last part of the route
+    }}
+  />
   }
 
   if (currentRoutePart.type === 'image' && currentRoutePart.fullscreen) {
@@ -308,7 +312,7 @@ const HikePage = () => {
             <Ionicons name={isPlaying ? 'pause' : 'play'} size={64} color="black" />
           </TouchableOpacity>
           <Slider
-            style={styles.fullScreenSlider}
+            style={styles.slider}
             value={audioStatus.position}
             minimumValue={0}
             maximumValue={audioStatus.duration}
@@ -361,27 +365,27 @@ const HikePage = () => {
       )}
       {currentRoutePart.type === 'audio' && !currentRoutePart.fullscreen && (
         <View style={styles.audioContainer}>
-        <TouchableOpacity onPress={playPauseAudio}>
-          <Ionicons name={isPlaying ? 'pause' : 'play'} size={64} color="black" />
-        </TouchableOpacity>
-        <Slider
-          style={styles.fullScreenSlider}
-          value={audioStatus.position}
-          minimumValue={0}
-          maximumValue={audioStatus.duration}
-          onValueChange={handleSliderValueChange}
-          thumbTintColor="black"
-          minimumTrackTintColor="black"
-          maximumTrackTintColor="grey"
-        />
-        <View style={styles.timeContainer}>
-          <Text>{Math.floor(audioStatus.position / 1000)} s</Text>
-          <Text>{Math.floor(audioStatus.duration / 1000)} s</Text>
+          <TouchableOpacity onPress={playPauseAudio}>
+            <Ionicons name={isPlaying ? 'pause' : 'play'} size={64} color="black" />
+          </TouchableOpacity>
+          <Slider
+            style={styles.slider}
+            value={audioStatus.position}
+            minimumValue={0}
+            maximumValue={audioStatus.duration}
+            onValueChange={handleSliderValueChange}
+            thumbTintColor="black"
+            minimumTrackTintColor="black"
+            maximumTrackTintColor="grey"
+          />
+          <View style={styles.timeContainer}>
+            <Text>{Math.floor(audioStatus.position / 1000)} s</Text>
+            <Text>{Math.floor(audioStatus.duration / 1000)} s</Text>
+          </View>
+          <TouchableOpacity onPress={rewindAudio}>
+            <Ionicons name="play-back" size={32} color="black" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={rewindAudio}>
-          <Ionicons name="play-back" size={32} color="black" />
-        </TouchableOpacity>
-      </View>
       )}
       {showNotification && !routePartEndNotificationShown && (
         <FinishRoutePartNotification
