@@ -19,6 +19,7 @@
     "expo-location": "~17.0.1",
     "expo-status-bar": "~1.12.1",
     "expo-updates": "~0.25.17",
+    "lottie-react-native": "^6.7.2",
     "react": "18.2.0",
     "react-native": "0.74.2",
     "react-native-confetti-cannon": "^1.5.2",

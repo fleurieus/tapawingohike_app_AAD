@@ -1,10 +1,18 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import LottieView from 'lottie-react-native'; // Import LottieView
 
 const FinishRoutePartNotification = ({ message, onNextPart, onDismiss }) => {
   return (
     <View style={styles.overlay}>
       <View style={styles.notification}>
+        {/* Green Tick Animation */}
+        <LottieView
+          source={require('../assets/tick.json')} // Adjust the path to your Lottie file
+          autoPlay
+          loop={false}
+          style={styles.lottieAnimation}
+        />
         <Text style={styles.message}>{message}</Text>
         <View style={styles.buttonContainer}>
           <TouchableOpacity onPress={onDismiss} style={[styles.button, styles.dismissButton]}>
@@ -36,6 +44,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     alignItems: 'center',
+  },
+  lottieAnimation: {
+    width: 100,
+    height: 100,
+    marginBottom: 20,
   },
   message: {
     marginBottom: 20,
