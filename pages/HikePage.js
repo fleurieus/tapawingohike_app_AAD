@@ -312,15 +312,12 @@ const HikePage = () => {
             <Ionicons name={isPlaying ? 'pause' : 'play'} size={64} color="black" />
           </TouchableOpacity>
           <Slider
-            style={styles.slider}
-            value={audioStatus.position}
-            minimumValue={0}
-            maximumValue={audioStatus.duration}
-            onValueChange={handleSliderValueChange}
-            thumbTintColor="black"
-            minimumTrackTintColor="black"
-            maximumTrackTintColor="grey"
-          />
+          style={{ width: 300, height: 40 }}
+          minimumValue={0}
+          maximumValue={audioStatus.duration}
+          value={audioStatus.position}
+          onSlidingComplete={handleSliderValueChange}
+        />
           <View style={styles.timeContainer}>
             <Text>{Math.floor(audioStatus.position / 1000)} s</Text>
             <Text>{Math.floor(audioStatus.duration / 1000)} s</Text>
@@ -369,15 +366,12 @@ const HikePage = () => {
             <Ionicons name={isPlaying ? 'pause' : 'play'} size={64} color="black" />
           </TouchableOpacity>
           <Slider
-            style={styles.slider}
-            value={audioStatus.position}
-            minimumValue={0}
-            maximumValue={audioStatus.duration}
-            onValueChange={handleSliderValueChange}
-            thumbTintColor="black"
-            minimumTrackTintColor="black"
-            maximumTrackTintColor="grey"
-          />
+          style={{ width: 200, height: 40 }}
+          minimumValue={0}
+          maximumValue={audioStatus.duration}
+          value={audioStatus.position}
+          onSlidingComplete={handleSliderValueChange}
+        />
           <View style={styles.timeContainer}>
             <Text>{Math.floor(audioStatus.position / 1000)} s</Text>
             <Text>{Math.floor(audioStatus.duration / 1000)} s</Text>
