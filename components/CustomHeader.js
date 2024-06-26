@@ -75,7 +75,7 @@ const CustomHeader = ({ title, onNext, onPrevious, canProceedToNext, backToLogin
     <View style={styles.container}>
       {routeName !== 'Login' && routeName !== 'Info' && (
         <TouchableOpacity onPress={handleBack}>
-          <Text style={styles.backButton}>Terug</Text>
+          <Text style={styles.backButton}>Logout</Text>
         </TouchableOpacity>
       )}
       <Text style={styles.title}>{title}</Text>

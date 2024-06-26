@@ -18,7 +18,7 @@ const routeParts = [
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     radius: 25,
     endpoint: { latitude: 37.421956, longitude: -122.084040 },
-    completed: false
+    completed: false,
   },
   {
     type: 'image',
@@ -26,7 +26,7 @@ const routeParts = [
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     radius: 25,
     endpoint: { latitude: 37.421956, longitude: -122.084040 },
-    completed: false
+    completed: false,
   },
   {
     type: 'audio',
@@ -34,7 +34,7 @@ const routeParts = [
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
     radius: 25,
     endpoint: { latitude: 37.422000, longitude: -122.085000 },
-    completed: false
+    completed: false,
   },
   {
     type: 'audio',
@@ -42,7 +42,7 @@ const routeParts = [
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
     radius: 25,
     endpoint: { latitude: 37.422000, longitude: -122.085000 },
-    completed: false
+    completed: false,
   },
   {
     type: 'map',
@@ -50,11 +50,9 @@ const routeParts = [
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
     radius: 25,
     endpoint: { latitude: 37.422000, longitude: -122.085000 },
-    completed: false
+    completed: false,
   },
 ];
-
-const dynamicBorderRadius = 10;
 
 const HikePage = () => {
   const [currentPosition, setCurrentPosition] = useState(null);
@@ -64,13 +62,11 @@ const HikePage = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [routeCompleted, setRouteCompleted] = useState(false);
-  let [routePartEndNotificationShown, setRoutePartEndNotificationShown] = useState(false); // Boolean to track if notification has been shown for current route part
-  let [initialCentered, setInitialCentered] = useState(false); // New state to track initial centering
-  const [audioStatus, setAudioStatus] = useState({
-    position: 0,
-    duration: 0,
-  });
-
+  const [routePartEndNotificationShown, setRoutePartEndNotificationShown] = useState(false);
+  const [initialCentered, setInitialCentered] = useState(false);
+  const [audioStatus, setAudioStatus] = useState({ position: 0, duration: 0 });
+  const [initialDistance, setInitialDistance] = useState(null);
+  const [halfwayNotificationShown, setHalfwayNotificationShown] = useState(false);
 
   const currentRoutePart = routeParts[currentRoutePartIndex];
 
@@ -97,6 +93,14 @@ const HikePage = () => {
           longitudeDelta: 0.0421,
         });
 
+        // Set initial distance to endpoint
+        const initialDist = LocationUtils.calculateDistance(
+          latitude,
+          longitude,
+          currentRoutePart.endpoint.latitude,
+          currentRoutePart.endpoint.longitude
+        );
+        setInitialDistance(initialDist);
       } catch (error) {
         console.error('Error fetching location:', error);
       }
@@ -114,9 +118,8 @@ const HikePage = () => {
             const { latitude, longitude, accuracy } = location.coords;
             console.log('Updated Location:', latitude, longitude);
             console.log('Location Accuracy:', accuracy);
-            // dynamicBorderRadius = Math.floor(accuracy);
             setCurrentPosition({ latitude, longitude });
-    
+
             if (currentRoutePart) {
               const distance = LocationUtils.calculateDistance(
                 latitude,
@@ -125,13 +128,16 @@ const HikePage = () => {
                 currentRoutePart.endpoint.longitude
               );
               console.log('Distance to endpoint in meters:', distance);
-    
+
               if (distance <= currentRoutePart.radius) {
                 console.log('Destination reached, showing notification');
                 if (!routePartEndNotificationShown) {
                   setShowNotification(true);
                 }
-                console.log(routePartEndNotificationShown);
+              } else if (initialDistance && distance <= initialDistance / 2 && !halfwayNotificationShown) {
+                console.log('User is halfway to the endpoint');
+                setHalfwayNotificationShown(true);
+                setShowNotification(true);
               }
             } else {
               console.log('Error fetching route part');
@@ -140,7 +146,7 @@ const HikePage = () => {
         );
         if (!initialCentered) {
           setRegion({ latitude, longitude });
-          setInitialCentered(true); // Set initial centering done
+          setInitialCentered(true);
           centerOnCurrentLocation();
         }
       } catch (error) {
@@ -158,7 +164,6 @@ const HikePage = () => {
     };
 
     initialize();
-
 
     return () => {
       if (sound) {
@@ -202,7 +207,6 @@ const HikePage = () => {
     }
   };
 
-
   const updateAudioStatus = (status) => {
     if (status.isLoaded) {
       setAudioStatus({
@@ -214,12 +218,9 @@ const HikePage = () => {
 
   const handleDismissNotification = () => {
     setShowNotification(false);
-    setRoutePartEndNotificationShown(true)
-    console.log("setting setRoutePartEndNotificaion to true");
-    console.log(routePartEndNotificationShown);
-    routeParts[currentRoutePartIndex].completed=true;
+    setRoutePartEndNotificationShown(true);
+    routeParts[currentRoutePartIndex].completed = true;
   };
-
 
   const rewindAudio = async () => {
     if (sound) {
@@ -238,8 +239,9 @@ const HikePage = () => {
       setRouteCompleted(true);
     }
     stopAudio();
-    setRoutePartEndNotificationShown(false)
-    routeParts[currentRoutePartIndex].completed=true;
+    setRoutePartEndNotificationShown(false);
+    setHalfwayNotificationShown(false);
+    routeParts[currentRoutePartIndex].completed = true;
   };
 
   const handlePreviousPart = () => {
@@ -247,7 +249,8 @@ const HikePage = () => {
       setCurrentRoutePartIndex((prevIndex) => prevIndex - 1);
     }
     stopAudio();
-    setRoutePartEndNotificationShown(false)
+    setRoutePartEndNotificationShown(false);
+    setHalfwayNotificationShown(false);
   };
 
   const centerOnCurrentLocation = () => {
@@ -262,33 +265,19 @@ const HikePage = () => {
   };
 
   if (routeCompleted) {
-    return (
-      <View style={{ flex: 1 }}>
-        <RouteCompletionComponent
-          onBackToPrevious={() => {
-            setRouteCompleted(false);
-            setCurrentRoutePartIndex(routeParts.length - 1); // Go back to the last part of the route
-          }}
-        />
-      </View>
-    );
-  }
-
-
-  if (!currentRoutePart) {
-    return <Text>Loading...</Text>;
+    return <RouteCompletionComponent />;
   }
 
   if (currentRoutePart.type === 'image' && currentRoutePart.fullscreen) {
     return (
       <View style={styles.fullScreenContainer}>
         <CustomHeader
-        title="Hike"
-        onNext={handleNextPart}
-        onPrevious={handlePreviousPart}
-        canProceedToNext={routeParts[currentRoutePartIndex].completed}
-        backToLogin = {stopAudio}
-      />
+          title="Hike"
+          onNext={handleNextPart}
+          onPrevious={handlePreviousPart}
+          canProceedToNext={routeParts[currentRoutePartIndex].completed}
+          backToLogin={stopAudio}
+        />
         <Image source={defaultImage} style={styles.fullScreenImage} />
         {showNotification && !routePartEndNotificationShown && (
           <FinishRoutePartNotification
@@ -298,7 +287,6 @@ const HikePage = () => {
             style={styles.notification}
           />
         )}
-
       </View>
     );
   }
@@ -306,72 +294,37 @@ const HikePage = () => {
   if (currentRoutePart.type === 'audio' && currentRoutePart.fullscreen) {
     return (
       <View style={styles.fullScreenContainer}>
-         <View style={styles.headerContainer}>
-         <CustomHeader
-        title="Hike"
-        onNext={handleNextPart}
-        onPrevious={handlePreviousPart}
-        canProceedToNext={routeParts[currentRoutePartIndex].completed}
-        backToLogin = {stopAudio}
-      />
-      </View>
-      <View style={styles.audioPlayerContainer}>
-        <Ionicons onPress={playPauseAudio} name={isPlaying ? 'pause' : 'play'} size={30} color="#007BFF" />
-        <TouchableOpacity onPress={rewindAudio} style={styles.controlButton}>
-          <Text>Rewind</Text>
-        </TouchableOpacity>
-        <Slider
-          style={{ width: 200, height: 40 }}
-          minimumValue={0}
-          maximumValue={audioStatus.duration}
-          value={audioStatus.position}
-          onSlidingComplete={handleSliderValueChange}
-        />
-        <Text>
-          {Math.floor(audioStatus.position / 1000)} / {Math.floor(audioStatus.duration / 1000)} seconds
-        </Text>
-      </View>
-        {showNotification && !routePartEndNotificationShown && (
-          <FinishRoutePartNotification
-            message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
-            onNextPart={handleNextPart}
-            onDismiss={handleDismissNotification}
-            style={styles.notification}
-          />
-        )}
-      </View>
-    );
-  }
-
-  if (currentRoutePart.type === 'map' && currentRoutePart.fullscreen) {
-    return (
-      <View style={styles.fullScreenContainer}>
         <View style={styles.headerContainer}>
-        <CustomHeader
-        title="Hike"
-        onNext={handleNextPart}
-        onPrevious={handlePreviousPart}
-        canProceedToNext={routeParts[currentRoutePartIndex].completed}
-        backToLogin = {stopAudio}
-      />
-      </View>
-        <MapView
-          style={styles.fullScreenMap}
-          region={region}
-          onRegionChangeComplete={(region) => setRegion(region)}
-        >
-          {currentPosition && (
-            <Marker coordinate={currentPosition} title="Huidige Locatie">
-              <View style={[styles.circle, styles.blueCircle]} />
-            </Marker>
-          )}
-          <Marker coordinate={currentRoutePart.endpoint} title="Eindpunt">
-            <View style={[styles.circle, styles.redCircle]} />
-          </Marker>
-        </MapView>
-        <TouchableOpacity onPress={centerOnCurrentLocation} style={styles.centerButton}>
-          <Text style={styles.centerButtonText}>Center</Text>
-        </TouchableOpacity>
+          <CustomHeader
+            title="Hike"
+            onNext={handleNextPart}
+            onPrevious={handlePreviousPart}
+            canProceedToNext={routeParts[currentRoutePartIndex].completed}
+            backToLogin={stopAudio}
+          />
+        </View>
+        <View style={styles.audioContainer}>
+          <TouchableOpacity onPress={playPauseAudio}>
+            <Ionicons name={isPlaying ? 'pause' : 'play'} size={64} color="black" />
+          </TouchableOpacity>
+          <Slider
+            style={styles.fullScreenSlider}
+            value={audioStatus.position}
+            minimumValue={0}
+            maximumValue={audioStatus.duration}
+            onValueChange={handleSliderValueChange}
+            thumbTintColor="black"
+            minimumTrackTintColor="black"
+            maximumTrackTintColor="grey"
+          />
+          <View style={styles.timeContainer}>
+            <Text>{Math.floor(audioStatus.position / 1000)} s</Text>
+            <Text>{Math.floor(audioStatus.duration / 1000)} s</Text>
+          </View>
+          <TouchableOpacity onPress={rewindAudio}>
+            <Ionicons name="play-back" size={32} color="black" />
+          </TouchableOpacity>
+        </View>
         {showNotification && !routePartEndNotificationShown && (
           <FinishRoutePartNotification
             message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
@@ -385,170 +338,111 @@ const HikePage = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1 }}>
       <CustomHeader
         title="Hike"
         onNext={handleNextPart}
         onPrevious={handlePreviousPart}
         canProceedToNext={routeParts[currentRoutePartIndex].completed}
-        backToLogin = {stopAudio}
+        backToLogin={stopAudio}
       />
+      <MapView style={{ flex: 1 }} region={region} showsUserLocation>
+        {currentRoutePart.type === 'location' && (
+          <Marker coordinate={currentRoutePart.endpoint} title="Endpoint" description="Eindpunt van dit deel" />
+        )}
+      </MapView>
+      {currentRoutePart.type === 'text' && (
+        <View style={styles.textContainer}>
+          <Text>{currentRoutePart.text}</Text>
+        </View>
+      )}
       {currentRoutePart.type === 'image' && !currentRoutePart.fullscreen && (
-        <Image source={defaultImage} style={styles.halfScreenImage} />
+        <Image source={defaultImage} style={styles.image} />
       )}
       {currentRoutePart.type === 'audio' && !currentRoutePart.fullscreen && (
-        <View style={styles.audioPlayerContainer}>
-        <Ionicons onPress={playPauseAudio} name={isPlaying ? 'pause' : 'play'} size={30} color="#007BFF" />
-        <TouchableOpacity onPress={rewindAudio} style={styles.controlButton}>
-          <Text>Rewind</Text>
+        <View style={styles.audioContainer}>
+        <TouchableOpacity onPress={playPauseAudio}>
+          <Ionicons name={isPlaying ? 'pause' : 'play'} size={64} color="black" />
         </TouchableOpacity>
         <Slider
-          style={{ width: 200, height: 40 }}
+          style={styles.fullScreenSlider}
+          value={audioStatus.position}
           minimumValue={0}
           maximumValue={audioStatus.duration}
-          value={audioStatus.position}
-          onSlidingComplete={handleSliderValueChange}
+          onValueChange={handleSliderValueChange}
+          thumbTintColor="black"
+          minimumTrackTintColor="black"
+          maximumTrackTintColor="grey"
         />
-        <Text>
-          {Math.floor(audioStatus.position / 1000)} / {Math.floor(audioStatus.duration / 1000)} seconds
-        </Text>
+        <View style={styles.timeContainer}>
+          <Text>{Math.floor(audioStatus.position / 1000)} s</Text>
+          <Text>{Math.floor(audioStatus.duration / 1000)} s</Text>
+        </View>
+        <TouchableOpacity onPress={rewindAudio}>
+          <Ionicons name="play-back" size={32} color="black" />
+        </TouchableOpacity>
       </View>
       )}
-      {region && !currentRoutePart.fullscreen && (
-        <MapView
-          style={styles.halfScreenMap}
-          region={region}
-          onRegionChangeComplete={(region) => setRegion(region)}
-        >
-          {currentPosition && (
-            <Marker coordinate={currentPosition} title="Huidige locatie">
-              <View style={[styles.circle, styles.blueCircle]} />
-            </Marker>
-          )}
-          <Marker coordinate={currentRoutePart.endpoint} title="Eindpunt">
-            <View style={[styles.circle, styles.redCircle]} />
-          </Marker>
-        </MapView>
-      )}
-      {!region && !currentRoutePart.fullscreen && (
-        <Text>Loading...</Text>
-      )}
-      <TouchableOpacity onPress={centerOnCurrentLocation} style={styles.centerButton}>
-        <Text style={styles.centerButtonText}>Center</Text>
-      </TouchableOpacity>
       {showNotification && !routePartEndNotificationShown && (
-          <FinishRoutePartNotification
-            message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
-            onNextPart={handleNextPart}
-            onDismiss={handleDismissNotification}
-            style={styles.notification}
-          />
-        )}
+        <FinishRoutePartNotification
+          message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
+          onNextPart={handleNextPart}
+          onDismiss={handleDismissNotification}
+          style={styles.notification}
+        />
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   fullScreenContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  fullScreenImage: {
+    width: '100%',
+    height: '91%',
+    resizeMode: 'contain',
+  },
+  textContainer: {
+    padding: 20,
+  },
+  image: {
+    width: '100%',
+    height: '50%',
+    resizeMode: 'contain',
+  },
+  audioContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  slider: {
+    width: '80%',
+    height: 40,
+  },
+  fullScreenSlider: {
+    width: '90%',
+    height: 40,
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
+  },
+  notification: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+  },
   headerContainer: {
+    width: '100%',
     position: 'absolute',
     top: 0,
-    left: 0,
-    right: 0,
     zIndex: 1,
-  },
-  halfScreenImage: {
-    width: '100%',
-    height: '50%',
-  },
-  fullScreenImage: {
-    marginBottom: 250,
-    marginTop: 100,
-    width: '100%',
-    height: '50%',
-  },
-  halfScreenAudio: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  halfScreenMap: {
-    width: '100%',
-    height: '50%',
-  },
-  fullScreenMap: {
-    width: '100%',
-    height: '90%',
-  },
-  circle: {
-    width: dynamicBorderRadius,
-    height: dynamicBorderRadius,
-    borderRadius: dynamicBorderRadius,
-  },
-  blueCircle: {
-    backgroundColor: 'blue',
-  },
-  redCircle: {
-    backgroundColor: 'red',
-  },
-  audioPlayerContainer: {
-    alignItems: 'center',
-    marginTop:40,
-    marginBottom:40,
-  },
-  controlButton: {
-    padding: 10,
-    backgroundColor: '#007BFF',
-    borderRadius: 5,
-    margin: 5,
-  },
-  completionText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  centerButton: {
-    position: 'absolute',
-    bottom: 20,
-    left: '50%',
-    transform: [{ translateX: -75 }],
-    padding: 10,
-    backgroundColor: '#007BFF',
-    borderRadius: 5,
-    marginLeft: 50
-  },
-  centerButtonText: {
-    color: '#FFF',
-    fontWeight: 'bold',
-  },
-  notification: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: [{ translateX: -150 }, { translateY: -50 }],
-    width: 300,
-    padding: 10,
-    backgroundColor: '#FFF',
-    borderRadius: 10,
-    elevation: 5,
-  },
-  controlButton: {
-    margin: 10,
-    padding: 10,
-    backgroundColor: '#007AFF',
-    borderRadius: 5,
-  },
-  notification: {
-    position: 'absolute',
-    bottom: 20,
-    left: 20,
-    right: 20,
   },
 });
 
