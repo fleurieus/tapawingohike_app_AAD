@@ -9,6 +9,7 @@ import FinishRoutePartNotification from '../components/FinishRoutePartNotificati
 import RouteCompletionComponent from '../components/RouteCompletionComponent';
 import CustomHeader from '../components/CustomHeader';
 import Slider from '@react-native-community/slider';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const routeParts = [
   {
@@ -323,10 +324,7 @@ const HikePage = () => {
       />
       </View>
       <View style={styles.audioPlayerContainer}>
-        <Text>Playing Audio...</Text>
-        <TouchableOpacity onPress={playPauseAudio} style={styles.controlButton}>
-          <Text>{isPlaying ? 'Pause' : 'Play'}</Text>
-        </TouchableOpacity>
+        <Ionicons onPress={playPauseAudio} name={isPlaying ? 'pause' : 'play'} size={30} color="#007BFF" />
         <TouchableOpacity onPress={rewindAudio} style={styles.controlButton}>
           <Text>Rewind</Text>
         </TouchableOpacity>
@@ -407,10 +405,7 @@ const HikePage = () => {
       )}
       {currentRoutePart.type === 'audio' && !currentRoutePart.fullscreen && (
         <View style={styles.audioPlayerContainer}>
-        <Text>Playing Audio...</Text>
-        <TouchableOpacity onPress={playPauseAudio} style={styles.controlButton}>
-          <Text>{isPlaying ? 'Pause' : 'Play'}</Text>
-        </TouchableOpacity>
+        <Ionicons onPress={playPauseAudio} name={isPlaying ? 'pause' : 'play'} size={30} color="#007BFF" />
         <TouchableOpacity onPress={rewindAudio} style={styles.controlButton}>
           <Text>Rewind</Text>
         </TouchableOpacity>
@@ -512,6 +507,8 @@ const styles = StyleSheet.create({
   },
   audioPlayerContainer: {
     alignItems: 'center',
+    marginTop:40,
+    marginBottom:40,
   },
   controlButton: {
     padding: 10,
