@@ -4,6 +4,7 @@ import { Button, Card, TextInput } from 'react-native-paper';
 import { FontAwesome } from '@expo/vector-icons';
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
+import LottieView from 'lottie-react-native';
 
 import NotificationToast from './components/NotificationToast';
 import Header from './components/Header';
@@ -53,9 +54,16 @@ function LoginScreen({ navigation }: Props) {
 
   return (
     <View style={styles.container}>
+
       <Card style={styles.card}>
         <Card.Content>
           <Header />
+          <LottieView
+            source={require('./assets/hike.json')} // Adjust the path to your Lottie file
+            autoPlay
+            loop
+            style={styles.lottieAnimation}
+          />
           <TextInput
             label="Team Code"
             value={teamCode}
@@ -86,29 +94,29 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen 
-          name="Login" 
-          component={LoginScreen} 
-          options={{ 
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{
             headerShown: true, // Hide default header
             header: () => <CustomHeader title="Login" onNext={undefined} onPrevious={undefined} canProceedToNext={undefined} backToLogin={undefined} /> // Add custom header
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name="Hike" 
-          component={HikePage} 
-          options={{ 
+        <Stack.Screen
+          name="Hike"
+          component={HikePage}
+          options={{
             headerShown: false, // Hide default header
             header: () => <CustomHeader title="Hike" onNext={undefined} onPrevious={undefined} canProceedToNext={undefined} backToLogin={undefined} /> // Add custom header
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name="Info" 
-          component={InfoPage} 
-          options={{ 
+        <Stack.Screen
+          name="Info"
+          component={InfoPage}
+          options={{
             headerShown: true, // Hide default header
             header: () => <CustomHeader title="Info" onNext={undefined} onPrevious={undefined} canProceedToNext={undefined} backToLogin={undefined} /> // Add custom header
-          }} 
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
@@ -122,6 +130,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  lottieAnimation: {
+    width: 200,
+    height: 200,
+    marginLeft: 25
+  },
   card: {
     width: '80%',
     borderWidth: 1,
@@ -132,7 +145,6 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 30,
-    marginTop: 100,
   },
   footerLink: {
     flexDirection: 'row',
