@@ -1,36 +1,46 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import ConfettiCannon from 'react-native-confetti-cannon';
+import { Audio } from 'expo-av';
 
 const RouteCompletionComponent = ({ onBackToPrevious }) => {
   const navigation = useNavigation();
   const confettiRef = useRef(null);
+  let sound = useRef(null);
+
+  useEffect(() => {
+    // Load and play the sound
+    const loadSound = async () => {
+      try {
+        const { sound: soundObject } = await Audio.Sound.createAsync(
+          require('../assets/finishRoute.mp3')
+        );
+        sound.current = soundObject;
+        await sound.current.playAsync();
+      } catch (error) {
+        console.log('Error loading sound', error);
+      }
+    };
+
+    loadSound();
+
+    // Clean up sound when component unmounts
+    return () => {
+      if (sound.current) {
+        sound.current.unloadAsync();
+      }
+    };
+  }, []);
 
   const handleBackToLogin = () => {
-    navigation.navigate('Login'); // Replace 'Login' with your actual login screen route name
+    navigation.navigate('Login');
   };
 
-  // Trigger confetti animation
   const triggerConfetti = () => {
     if (confettiRef.current) {
       confettiRef.current.start();
     }
-  };
-
-  // Trigger confetti 3 times with a delay
-  const triggerConfettiMultipleTimes = () => {
-    setTimeout(() => {
-      triggerConfetti();
-    }, 0); // First trigger immediately
-
-    setTimeout(() => {
-      triggerConfetti();
-    }, 1500); // Second trigger after 1.5 seconds
-
-    setTimeout(() => {
-      triggerConfetti();
-    }, 3000); // Third trigger after 3 seconds
   };
 
   return (
@@ -45,7 +55,6 @@ const RouteCompletionComponent = ({ onBackToPrevious }) => {
           <Text style={styles.buttonText}>Terug naar vorige deel</Text>
         </TouchableOpacity>
       </View>
-      {/* Render ConfettiCannon component with a ref */}
       <ConfettiCannon
         ref={confettiRef}
         count={200}
