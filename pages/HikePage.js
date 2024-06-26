@@ -20,7 +20,31 @@ const routeParts = [
     completed: false
   },
   {
+    type: 'image',
+    fullscreen: true,
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+    radius: 25,
+    endpoint: { latitude: 37.421956, longitude: -122.084040 },
+    completed: false
+  },
+  {
     type: 'audio',
+    fullscreen: false,
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+    radius: 25,
+    endpoint: { latitude: 37.422000, longitude: -122.085000 },
+    completed: false
+  },
+  {
+    type: 'audio',
+    fullscreen: true,
+    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+    radius: 25,
+    endpoint: { latitude: 37.422000, longitude: -122.085000 },
+    completed: false
+  },
+  {
+    type: 'map',
     fullscreen: false,
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
     radius: 25,
@@ -288,21 +312,33 @@ const HikePage = () => {
   if (currentRoutePart.type === 'audio' && currentRoutePart.fullscreen) {
     return (
       <View style={styles.fullScreenContainer}>
+         <View style={styles.headerContainer}>
         <CustomHeader
-        title="Hike"
-        onNext={handleNextPart}
-        onPrevious={handlePreviousPart}
-        canProceedToNext={routeParts[currentRoutePartIndex].completed}
-      />
-        <View style={styles.audioPlayerContainer}>
-          <Text>Playing Audio...</Text>
-          <TouchableOpacity onPress={playPauseAudio} style={styles.controlButton}>
-            <Text>{isPlaying ? 'Pause' : 'Play'}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={rewindAudio} style={styles.controlButton}>
-            <Text>Rewind</Text>
-          </TouchableOpacity>
-        </View>
+          title="Hike"
+          onNext={handleNextPart}
+          onPrevious={handlePreviousPart}
+          canProceedToNext={routeParts[currentRoutePartIndex].completed}
+        />
+      </View>
+      <View style={styles.audioPlayerContainer}>
+        <Text>Playing Audio...</Text>
+        <TouchableOpacity onPress={playPauseAudio} style={styles.controlButton}>
+          <Text>{isPlaying ? 'Pause' : 'Play'}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={rewindAudio} style={styles.controlButton}>
+          <Text>Rewind</Text>
+        </TouchableOpacity>
+        <Slider
+          style={{ width: 200, height: 40 }}
+          minimumValue={0}
+          maximumValue={audioStatus.duration}
+          value={audioStatus.position}
+          onSlidingComplete={handleSliderValueChange}
+        />
+        <Text>
+          {Math.floor(audioStatus.position / 1000)} / {Math.floor(audioStatus.duration / 1000)} seconds
+        </Text>
+      </View>
         {showNotification && !routePartEndNotificationShown && (
           <FinishRoutePartNotification
             message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
@@ -318,12 +354,14 @@ const HikePage = () => {
   if (currentRoutePart.type === 'map' && currentRoutePart.fullscreen) {
     return (
       <View style={styles.fullScreenContainer}>
+        <View style={styles.headerContainer}>
         <CustomHeader
-        title="Hike"
-        onNext={handleNextPart}
-        onPrevious={handlePreviousPart}
-        canProceedToNext={routeParts[currentRoutePartIndex].completed}
-      />
+          title="Hike"
+          onNext={handleNextPart}
+          onPrevious={handlePreviousPart}
+          canProceedToNext={routeParts[currentRoutePartIndex].completed}
+        />
+      </View>
         <MapView
           style={styles.fullScreenMap}
           region={region}
@@ -428,13 +466,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  headerContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
+  },
   halfScreenImage: {
     width: '100%',
     height: '50%',
   },
   fullScreenImage: {
     width: '100%',
-    height: '90%',
+    height: '50%',
   },
   halfScreenAudio: {
     flex: 1,
