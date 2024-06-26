@@ -2,11 +2,13 @@ import React, { useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import ConfettiCannon from 'react-native-confetti-cannon';
+import LottieView from 'lottie-react-native';
 import { Audio } from 'expo-av';
 
 const RouteCompletionComponent = ({ onBackToPrevious }) => {
   const navigation = useNavigation();
   const confettiRef = useRef(null);
+  const lottieRef = useRef(null);
   let sound = useRef(null);
 
   useEffect(() => {
@@ -37,10 +39,17 @@ const RouteCompletionComponent = ({ onBackToPrevious }) => {
     navigation.navigate('Login');
   };
 
-
   return (
     <View style={styles.cardContainer}>
       <View style={styles.card}>
+              {/* Render Lottie Animation */}
+      <LottieView
+        ref={lottieRef}
+        source={require('../assets/celebration.json')} // Adjust the path to your Lottie file
+        autoPlay
+        loop={false}
+        style={styles.lottieAnimation}
+      />
         <Text style={styles.completionText}>Gefeliciteerd!</Text>
         <Text style={styles.completionText}>Je hebt de route voltooid.</Text>
         <TouchableOpacity onPress={handleBackToLogin} style={styles.button}>
@@ -50,6 +59,7 @@ const RouteCompletionComponent = ({ onBackToPrevious }) => {
           <Text style={styles.buttonText}>Terug naar vorige deel</Text>
         </TouchableOpacity>
       </View>
+      {/* Render ConfettiCannon component with a ref */}
       <ConfettiCannon
         ref={confettiRef}
         count={200}
@@ -99,6 +109,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FFFFFF',
     textAlign: 'center',
+  },
+  lottieAnimation: {
+    width: 150,
+    height: 150,
+    marginTop: 20,
   },
 });
 
