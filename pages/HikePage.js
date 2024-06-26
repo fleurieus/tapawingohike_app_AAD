@@ -178,6 +178,7 @@ const HikePage = () => {
     setRoutePartEndNotificationShown(true)
     console.log("setting setRoutePartEndNotificaion to true");
     console.log(routePartEndNotificationShown);
+    routeParts[currentRoutePartIndex].completed=true;
   };
 
 
@@ -243,10 +244,11 @@ const HikePage = () => {
     return (
       <View style={styles.fullScreenContainer}>
         <CustomHeader
-          title="Hike"
-          onNext={handleNextPart}
-          onPrevious={handlePreviousPart}
-        />
+        title="Hike"
+        onNext={handleNextPart}
+        onPrevious={handlePreviousPart}
+        canProceedToNext={routeParts[currentRoutePartIndex].completed}
+      />
         <Image source={defaultImage} style={styles.fullScreenImage} />
         {showNotification && !routePartEndNotificationShown && (
           <FinishRoutePartNotification
@@ -265,10 +267,11 @@ const HikePage = () => {
     return (
       <View style={styles.fullScreenContainer}>
         <CustomHeader
-          title="Hike"
-          onNext={handleNextPart}
-          onPrevious={handlePreviousPart}
-        />
+        title="Hike"
+        onNext={handleNextPart}
+        onPrevious={handlePreviousPart}
+        canProceedToNext={routeParts[currentRoutePartIndex].completed}
+      />
         <View style={styles.audioPlayerContainer}>
           <Text>Playing Audio...</Text>
           <TouchableOpacity onPress={playPauseAudio} style={styles.controlButton}>
@@ -294,10 +297,11 @@ const HikePage = () => {
     return (
       <View style={styles.fullScreenContainer}>
         <CustomHeader
-          title="Hike"
-          onNext={handleNextPart}
-          onPrevious={handlePreviousPart}
-        />
+        title="Hike"
+        onNext={handleNextPart}
+        onPrevious={handlePreviousPart}
+        canProceedToNext={routeParts[currentRoutePartIndex].completed}
+      />
         <MapView
           style={styles.fullScreenMap}
           region={region}
