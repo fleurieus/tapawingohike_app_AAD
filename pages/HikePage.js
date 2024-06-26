@@ -46,14 +46,6 @@ const routeParts = [
   },
   {
     type: 'map',
-    fullscreen: false,
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    radius: 25,
-    endpoint: { latitude: 37.422000, longitude: -122.085000 },
-    completed: false
-  },
-  {
-    type: 'map',
     fullscreen: true,
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
     radius: 25,
@@ -356,11 +348,12 @@ const HikePage = () => {
       <View style={styles.fullScreenContainer}>
         <View style={styles.headerContainer}>
         <CustomHeader
-          title="Hike"
-          onNext={handleNextPart}
-          onPrevious={handlePreviousPart}
-          canProceedToNext={routeParts[currentRoutePartIndex].completed}
-        />
+        title="Hike"
+        onNext={handleNextPart}
+        onPrevious={handlePreviousPart}
+        canProceedToNext={routeParts[currentRoutePartIndex].completed}
+        backToLogin = {stopAudio}
+      />
       </View>
         <MapView
           style={styles.fullScreenMap}
@@ -368,11 +361,11 @@ const HikePage = () => {
           onRegionChangeComplete={(region) => setRegion(region)}
         >
           {currentPosition && (
-            <Marker coordinate={currentPosition} title="Current Location">
+            <Marker coordinate={currentPosition} title="Huidige Locatie">
               <View style={[styles.circle, styles.blueCircle]} />
             </Marker>
           )}
-          <Marker coordinate={currentRoutePart.endpoint} title="Endpoint">
+          <Marker coordinate={currentRoutePart.endpoint} title="Eindpunt">
             <View style={[styles.circle, styles.redCircle]} />
           </Marker>
         </MapView>
@@ -428,11 +421,11 @@ const HikePage = () => {
           onRegionChangeComplete={(region) => setRegion(region)}
         >
           {currentPosition && (
-            <Marker coordinate={currentPosition} title="Current Location">
+            <Marker coordinate={currentPosition} title="Huidige locatie">
               <View style={[styles.circle, styles.blueCircle]} />
             </Marker>
           )}
-          <Marker coordinate={currentRoutePart.endpoint} title="Endpoint">
+          <Marker coordinate={currentRoutePart.endpoint} title="Eindpunt">
             <View style={[styles.circle, styles.redCircle]} />
           </Marker>
         </MapView>
