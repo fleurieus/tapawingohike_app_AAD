@@ -19,46 +19,46 @@ const routeParts = [
     endpoint: { latitude: 37.421956, longitude: -122.084040 },
     completed: false
   },
-  {
-    type: 'image',
-    fullscreen: true,
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-    radius: 25,
-    endpoint: { latitude: 37.421956, longitude: -122.084040 },
-    completed: false
-  },
-  {
-    type: 'audio',
-    fullscreen: false,
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    radius: 25,
-    endpoint: { latitude: 37.422000, longitude: -122.085000 },
-    completed: false
-  },
-  {
-    type: 'audio',
-    fullscreen: true,
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    radius: 25,
-    endpoint: { latitude: 37.422000, longitude: -122.085000 },
-    completed: false
-  },
-  {
-    type: 'map',
-    fullscreen: false,
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    radius: 25,
-    endpoint: { latitude: 37.422000, longitude: -122.085000 },
-    completed: false
-  },
-  {
-    type: 'map',
-    fullscreen: true,
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    radius: 25,
-    endpoint: { latitude: 37.422000, longitude: -122.085000 },
-    completed: false
-  },
+  // {
+  //   type: 'image',
+  //   fullscreen: true,
+  //   audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+  //   radius: 25,
+  //   endpoint: { latitude: 37.421956, longitude: -122.084040 },
+  //   completed: false
+  // },
+  // {
+  //   type: 'audio',
+  //   fullscreen: false,
+  //   audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+  //   radius: 25,
+  //   endpoint: { latitude: 37.422000, longitude: -122.085000 },
+  //   completed: false
+  // },
+  // {
+  //   type: 'audio',
+  //   fullscreen: true,
+  //   audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+  //   radius: 25,
+  //   endpoint: { latitude: 37.422000, longitude: -122.085000 },
+  //   completed: false
+  // },
+  // {
+  //   type: 'map',
+  //   fullscreen: false,
+  //   audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+  //   radius: 25,
+  //   endpoint: { latitude: 37.422000, longitude: -122.085000 },
+  //   completed: false
+  // },
+  // {
+  //   type: 'map',
+  //   fullscreen: true,
+  //   audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+  //   radius: 25,
+  //   endpoint: { latitude: 37.422000, longitude: -122.085000 },
+  //   completed: false
+  // },
 ];
 
 const dynamicBorderRadius = 10;

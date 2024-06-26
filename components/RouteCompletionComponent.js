@@ -1,12 +1,21 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import ConfettiCannon from 'react-native-confetti-cannon';
 
 const RouteCompletionComponent = ({ onBackToPrevious }) => {
   const navigation = useNavigation();
+  const confettiRef = useRef(null);
 
   const handleBackToLogin = () => {
     navigation.navigate('Login'); // Replace 'Login' with your actual login screen route name
+  };
+
+  const triggerConfetti = () => {
+    if (confettiRef.current) {
+      // Trigger confetti animation
+      confettiRef.current.start();
+    }
   };
 
   return (
@@ -21,6 +30,13 @@ const RouteCompletionComponent = ({ onBackToPrevious }) => {
           <Text style={styles.buttonText}>Terug naar vorige deel</Text>
         </TouchableOpacity>
       </View>
+      {/* Render ConfettiCannon component with a ref */}
+      <ConfettiCannon
+        ref={confettiRef}
+        count={500}
+        origin={{ x: 50, y: 0 }}
+        fadeOut={true}
+      />
     </View>
   );
 };
