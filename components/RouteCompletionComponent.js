@@ -11,11 +11,26 @@ const RouteCompletionComponent = ({ onBackToPrevious }) => {
     navigation.navigate('Login'); // Replace 'Login' with your actual login screen route name
   };
 
+  // Trigger confetti animation
   const triggerConfetti = () => {
     if (confettiRef.current) {
-      // Trigger confetti animation
       confettiRef.current.start();
     }
+  };
+
+  // Trigger confetti 3 times with a delay
+  const triggerConfettiMultipleTimes = () => {
+    setTimeout(() => {
+      triggerConfetti();
+    }, 0); // First trigger immediately
+
+    setTimeout(() => {
+      triggerConfetti();
+    }, 1500); // Second trigger after 1.5 seconds
+
+    setTimeout(() => {
+      triggerConfetti();
+    }, 3000); // Third trigger after 3 seconds
   };
 
   return (
