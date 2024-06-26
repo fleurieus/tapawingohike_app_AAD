@@ -47,7 +47,7 @@ const RouteCompletionComponent = ({ onBackToPrevious }) => {
         ref={lottieRef}
         source={require('../assets/celebration.json')} // Adjust the path to your Lottie file
         autoPlay
-        loop={false}
+        loop={true}
         style={styles.lottieAnimation}
       />
         <Text style={styles.completionText}>Gefeliciteerd!</Text>
