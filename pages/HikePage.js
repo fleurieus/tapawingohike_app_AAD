@@ -12,10 +12,11 @@ import CustomHeader from '../components/CustomHeader';
 const routeParts = [
   {
     type: 'image',
-    fullscreen: true,
+    fullscreen: false,
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     radius: 25,
     endpoint: { latitude: 37.421956, longitude: -122.084040 },
+    completed: false
   },
   {
     type: 'audio',
@@ -23,6 +24,7 @@ const routeParts = [
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
     radius: 25,
     endpoint: { latitude: 37.422000, longitude: -122.085000 },
+    completed: false
   },
   {
     type: 'map',
@@ -30,6 +32,7 @@ const routeParts = [
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
     radius: 25,
     endpoint: { latitude: 37.422000, longitude: -122.085000 },
+    completed: false
   },
 ];
 
@@ -196,6 +199,7 @@ const HikePage = () => {
     }
     stopAudio();
     setRoutePartEndNotificationShown(false)
+    routeParts[currentRoutePartIndex].completed=true;
   };
 
   const handlePreviousPart = () => {
@@ -329,6 +333,7 @@ const HikePage = () => {
         title="Hike"
         onNext={handleNextPart}
         onPrevious={handlePreviousPart}
+        canProceedToNext={routeParts[currentRoutePartIndex].completed}
       />
       {currentRoutePart.type === 'image' && !currentRoutePart.fullscreen && (
         <Image source={defaultImage} style={styles.halfScreenImage} />

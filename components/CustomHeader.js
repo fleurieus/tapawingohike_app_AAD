@@ -3,20 +3,17 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 
-const CustomHeader = ({ title, onNext, onPrevious }) => {
+const CustomHeader = ({ title, onNext, onPrevious, canProceedToNext }) => {
   const navigation = useNavigation();
   const route = useRoute();
   const { name: routeName } = route;
 
-  // Function to handle pressing the back button
   const handleBack = () => {
     if (routeName !== 'Login') {
       navigation.goBack();
     }
-    // Handle other cases if needed
   };
 
-  // Function to handle undo action
   const handleUndoAction = () => {
     Alert.alert(
       'Confirm',
@@ -35,7 +32,6 @@ const CustomHeader = ({ title, onNext, onPrevious }) => {
     );
   };
 
-  // Function to handle next action
   const handleNextAction = () => {
     Alert.alert(
       'Confirm',
@@ -54,7 +50,6 @@ const CustomHeader = ({ title, onNext, onPrevious }) => {
     );
   };
 
-  // Function to render right buttons based on route name
   const renderRightButtons = () => {
     switch (routeName) {
       case 'Hike':
@@ -63,9 +58,11 @@ const CustomHeader = ({ title, onNext, onPrevious }) => {
             <TouchableOpacity onPress={handleUndoAction}>
               <FontAwesome name="undo" size={24} color="black" style={styles.icon} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleNextAction}>
-              <FontAwesome name="arrow-right" size={24} color="black" style={styles.icon} />
-            </TouchableOpacity>
+            {canProceedToNext && (
+              <TouchableOpacity onPress={handleNextAction}>
+                <FontAwesome name="arrow-right" size={24} color="black" style={styles.icon} />
+              </TouchableOpacity>
+            )}
           </View>
         );
       default:
@@ -75,15 +72,12 @@ const CustomHeader = ({ title, onNext, onPrevious }) => {
 
   return (
     <View style={styles.container}>
-      {/* Conditionally render the back button */}
       {routeName !== 'Login' && routeName !== 'Info' && (
         <TouchableOpacity onPress={handleBack}>
           <Text style={styles.backButton}>Terug</Text>
         </TouchableOpacity>
       )}
-      {/* Centered title */}
       <Text style={styles.title}>{title}</Text>
-      {/* Render right buttons based on route name */}
       {renderRightButtons()}
     </View>
   );
@@ -97,7 +91,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 15,
     backgroundColor: '#f5f5f5',
-    marginTop: 20
+    marginTop: 20,
   },
   backButton: {
     color: 'blue',
@@ -117,6 +111,9 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     marginLeft: 5,
+  },
+  disabledButton: {
+    color: '#999',
   },
 });
 
