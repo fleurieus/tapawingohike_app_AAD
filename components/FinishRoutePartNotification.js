@@ -1,14 +1,43 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import LottieView from 'lottie-react-native'; // Import LottieView
+import { Audio } from 'expo-av';
 
 const FinishRoutePartNotification = ({ message, onNextPart, onDismiss }) => {
+
+  let sound = useRef(null);
+
+  useEffect(() => {
+    // Load and play the sound
+    const loadSound = async () => {
+      try {
+        const { sound: soundObject } = await Audio.Sound.createAsync(
+          require('../assets/finishRoutePart.mp3')
+        );
+        sound.current = soundObject;
+        await sound.current.playAsync();
+      } catch (error) {
+        console.log('Error loading sound', error);
+      }
+    };
+
+    loadSound();
+
+    // Clean up sound when component unmounts
+    return () => {
+      if (sound.current) {
+        sound.current.unloadAsync();
+      }
+    };
+  }, []);
+
+
   return (
     <View style={styles.overlay}>
       <View style={styles.notification}>
         {/* Green Tick Animation */}
         <LottieView
-          source={require('../assets/tick.json')} // Adjust the path to your Lottie file
+          source={require('../assets/tick.json')}
           autoPlay
           loop={false}
           style={styles.lottieAnimation}

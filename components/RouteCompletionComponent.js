@@ -37,11 +37,6 @@ const RouteCompletionComponent = ({ onBackToPrevious }) => {
     navigation.navigate('Login');
   };
 
-  const triggerConfetti = () => {
-    if (confettiRef.current) {
-      confettiRef.current.start();
-    }
-  };
 
   return (
     <View style={styles.cardContainer}>
