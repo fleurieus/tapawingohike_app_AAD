@@ -1,3 +1,8 @@
+/*
+This component renders a notification overlay upon completing a route part. It includes a Lottie animation (green tick), a message, and options to dismiss or proceed to the next route part.
+The overlay has a semi-transparent background to highlight the notification. The animation and sound play upon component initialization from provided assets. 
+*/
+
 import React, { useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import LottieView from 'lottie-react-native';

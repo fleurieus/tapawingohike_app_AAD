@@ -1,3 +1,9 @@
+/*
+This component provides navigation controls and contextual options based on the current route. It allows users to navigate back, logout, and optionally proceed to the next route part.
+The appearance of the header adjusts dynamically based on the route name, displaying specific actions like undo and next on the 'Hike' route.
+FontAwesome icons enhance visual clarity and interaction. Styling ensures consistent alignment and spacing across different screen sizes.
+*/
+
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';

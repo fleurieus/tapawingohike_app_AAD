@@ -1,3 +1,9 @@
+/*
+Displays a halfway notification overlay with a Lottie animation, a message, and a dismiss button. 
+It includes a semi-transparent background to focus user attention. The animation and sound play upon initialization from assets.
+The notification box has fixed dimensions and a centered message with a dismiss button.
+*/
+
 import React, { useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import LottieView from 'lottie-react-native';

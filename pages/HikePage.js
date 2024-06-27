@@ -1,3 +1,13 @@
+/*
+The HikePage is designed for guiding users through a hiking route using a mobile app. It integrates features such as:
+
+Real-time Location Tracking: Monitors the user's current location on a map.
+Route Parts Navigation: Allows users to navigate through different parts of the route.
+Multimedia Integration: Supports images and audio for enhancing the hiking experience.
+Interactive Notifications: Notifies users upon reaching certain milestones (e.g., halfway point or route completion).
+User Controls: Provides controls for audio playback (play, pause, rewind, fast forward) and interaction with route components.
+*/
+
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
@@ -12,7 +22,7 @@ import Slider from '@react-native-community/slider';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import HalfwayNotification from '../components/HalfwayNotification';
 
-const routeParts = [
+const routeParts = [ //Routepart data used to display the routeparts
   {
     type: 'image',
     fullscreen: false,
@@ -56,22 +66,26 @@ const routeParts = [
 ];
 
 const HikePage = () => {
-  const [currentPosition, setCurrentPosition] = useState(null);
-  const [region, setRegion] = useState(null);
-  const [currentRoutePartIndex, setCurrentRoutePartIndex] = useState(0);
-  const [sound, setSound] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [showNotification, setShowNotification] = useState(false);
-  const [routeCompleted, setRouteCompleted] = useState(false);
-  const [routePartEndNotificationShown, setRoutePartEndNotificationShown] = useState(false);
-  const [initialCentered, setInitialCentered] = useState(false);
-  const [audioStatus, setAudioStatus] = useState({ position: 0, duration: 0 });
-  const [initialDistance, setInitialDistance] = useState(null);
-  const [halfwayNotificationShown, setHalfwayNotificationShown] = useState(false);
+  const [currentPosition, setCurrentPosition] = useState(null); // User's current latitude and longitude
+  const [region, setRegion] = useState(null); // Current map region
+  const [currentRoutePartIndex, setCurrentRoutePartIndex] = useState(0); // Current index of the route part
+  const [sound, setSound] = useState(null); // Audio sound object
+  const [isPlaying, setIsPlaying] = useState(false); // Whether audio is playing or not
+  const [showNotification, setShowNotification] = useState(false); // Whether to show a notification
+  const [routeCompleted, setRouteCompleted] = useState(false); // Whether the entire route is completed
+  const [routePartEndNotificationShown, setRoutePartEndNotificationShown] = useState(false); // Whether the end notification for a route part has been shown
+  const [initialCentered, setInitialCentered] = useState(false); // Whether the map is initially centered on the user's location
+  const [audioStatus, setAudioStatus] = useState({ position: 0, duration: 0 }); // Audio playback status (position and duration)
+  const [initialDistance, setInitialDistance] = useState(null); // Initial distance to the endpoint of the current route part
+  const [halfwayNotificationShown, setHalfwayNotificationShown] = useState(false); // Whether the halfway notification has been shown
+  const currentRoutePart = routeParts[currentRoutePartIndex]; // Get the current route part based on the currentRoutePartIndex
 
-  const currentRoutePart = routeParts[currentRoutePartIndex];
 
   useEffect(() => {
+    /*
+    This async function requests location permissions, fetches the user's current location, and sets the currentPosition and region states.
+    It also calculates the initial distance to the endpoint of the current route part.
+    */
     const getCurrentLocation = async () => {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -106,12 +120,16 @@ const HikePage = () => {
       }
     };
 
+    /*
+    Sets up a location watcher using Location.watchPositionAsync to monitor the user's location changes in real-time.
+    It updates the currentPosition state and calculates the distance to the endpoint, showing notifications if necessary.
+    */
     const setupLocationWatcher = async () => {
       try {
         await Location.watchPositionAsync(
           {
             accuracy: Location.Accuracy.Highest,
-            timeInterval: 15000,
+            timeInterval: 15000, //The interval used to check the user's location
             distanceInterval: 0,
           },
           (location) => {
@@ -154,6 +172,10 @@ const HikePage = () => {
       }
     };
 
+    /*
+    This async function calls getCurrentLocation and setupLocationWatcher to set up the initial location tracking and monitoring. 
+    It also loads the audio for the first route part if it is of type 'audio'.
+    */
     const initialize = async () => {
       await getCurrentLocation();
       await setupLocationWatcher();
@@ -173,7 +195,7 @@ const HikePage = () => {
   }, []);
 
   useEffect(() => {
-    if (currentRoutePart && currentRoutePart.type === 'audio') {
+    if (currentRoutePart && currentRoutePart.type === 'audio') {  // Loads the audio file for the current route part if it is of type 'audio'. It sets the sound state and updates the audio status during playback.
       const loadAudio = async () => {
         const { sound } = await Audio.Sound.createAsync({ uri: currentRoutePart.audioUrl });
         setSound(sound);
@@ -183,7 +205,7 @@ const HikePage = () => {
     }
   }, [currentRoutePart]);
 
-  const playPauseAudio = async () => {
+  const playPauseAudio = async () => { //This async function toggles audio playback between play and pause states. It updates the isPlaying state accordingly.
     if (sound) {
       if (isPlaying) {
         await sound.pauseAsync();
@@ -194,20 +216,20 @@ const HikePage = () => {
     }
   };
 
-  const stopAudio = async () => {
+  const stopAudio = async () => { //This async function stops the audio playback if it is currently playing.
     if (isPlaying) {
       await sound.pauseAsync();
       setIsPlaying(!isPlaying);
     }
   };
 
-  const handleSliderValueChange = async (value) => {
+  const handleSliderValueChange = async (value) => { //This async function updates the audio playback position based on the slider value.
     if (sound) {
       await sound.setPositionAsync(value);
     }
   };
 
-  const updateAudioStatus = (status) => {
+  const updateAudioStatus = (status) => { //This function updates the audioStatus state with the current position and duration of the audio playback.
     if (status.isLoaded) {
       setAudioStatus({
         position: status.positionMillis,
@@ -216,18 +238,18 @@ const HikePage = () => {
     }
   };
 
-  const handleDismissNotification = () => {
+  const handleDismissNotification = () => { //This function handles the dismissal of the end notification for a route part, marking the route part as completed.
     setShowNotification(false);
     setRoutePartEndNotificationShown(true);
     routeParts[currentRoutePartIndex].completed = true;
   };
 
-  const handleDismissHalfwayNotification = () => {
+  const handleDismissHalfwayNotification = () => { //This function handles the dismissal of the halfway notification, clearing the screen for the user.
     setShowNotification(false);
     setHalfwayNotificationShown(false);
   };
 
-  const rewindAudio = async () => {
+  const rewindAudio = async () => { //This async function rewinds the audio playback by 10 seconds.
     if (sound) {
       const status = await sound.getStatusAsync();
       const newPosition = Math.max(0, status.positionMillis - 10000);
@@ -235,7 +257,7 @@ const HikePage = () => {
     }
   };
 
-  const fastForwardAudio = async () => {
+  const fastForwardAudio = async () => { //This async function fast-forwards the audio playback by 10 seconds.
     if (sound) {
       const status = await sound.getStatusAsync();
       const newPosition = Math.min(status.durationMillis, status.positionMillis + 10000);
@@ -243,7 +265,7 @@ const HikePage = () => {
     }
   };
 
-  const handleNextPart = () => {
+  const handleNextPart = () => { //Cleans up the state and increases the current routepart index
     console.log('Proceeding to the next part of the route');
     setShowNotification(false);
     if (currentRoutePartIndex < routeParts.length - 1) {
@@ -257,7 +279,7 @@ const HikePage = () => {
     routeParts[currentRoutePartIndex].completed = true;
   };
 
-  const handlePreviousPart = () => {
+  const handlePreviousPart = () => { //Cleans up the state and decreases the current routepart index
     if (currentRoutePartIndex > 0) {
       setCurrentRoutePartIndex((prevIndex) => prevIndex - 1);
     }
@@ -266,7 +288,7 @@ const HikePage = () => {
     setHalfwayNotificationShown(false);
   };
 
-  const centerOnCurrentLocation = () => {
+  const centerOnCurrentLocation = () => { //This function centers the map on the user's current location by updating the region state.
     if (currentPosition) {
       setRegion({
         latitude: currentPosition.latitude,
@@ -277,7 +299,7 @@ const HikePage = () => {
     }
   };
 
-  if (routeCompleted) {
+  if (routeCompleted) { //When the route is completed this is displayed.
     return (
       <RouteCompletionComponent
         onBackToPrevious={() => {
@@ -288,7 +310,7 @@ const HikePage = () => {
     );
   }
 
-  if (currentRoutePart.type === 'image' && currentRoutePart.fullscreen) {
+  if (currentRoutePart.type === 'image' && currentRoutePart.fullscreen) { //Image and fullscreen routepart
     return (
       <View style={styles.fullScreenContainer}>
         <CustomHeader
@@ -317,7 +339,7 @@ const HikePage = () => {
     );
   }
 
-  if (currentRoutePart.type === 'audio' && currentRoutePart.fullscreen) {
+  if (currentRoutePart.type === 'audio' && currentRoutePart.fullscreen) { //Audio and fullscreen routepart
     return (
       <View style={styles.fullScreenContainer}>
         <View style={styles.headerContainer}>
@@ -385,15 +407,10 @@ const HikePage = () => {
           <Marker coordinate={currentRoutePart.endpoint} title="Endpoint" description="Eindpunt van dit deel" pinColor="red" />
         )}
       </MapView>
-      {currentRoutePart.type === 'text' && (
-        <View style={styles.textContainer}>
-          <Text>{currentRoutePart.text}</Text>
-        </View>
-      )}
-      {currentRoutePart.type === 'image' && !currentRoutePart.fullscreen && (
+      {currentRoutePart.type === 'image' && !currentRoutePart.fullscreen && ( //Image and non-fullscreen routepart 
         <Image source={defaultImage} style={styles.image} />
       )}
-      {currentRoutePart.type === 'audio' && !currentRoutePart.fullscreen && (
+      {currentRoutePart.type === 'audio' && !currentRoutePart.fullscreen && ( //Audio and non-fullscreen routepart
         <View style={styles.audioContainer}>
           <TouchableOpacity onPress={playPauseAudio}>
             <Ionicons name={isPlaying ? 'pause' : 'play'} size={64} color="black" />
@@ -419,7 +436,7 @@ const HikePage = () => {
           </View>
         </View>
       )}
-      {showNotification && !routePartEndNotificationShown && (
+      {showNotification && !routePartEndNotificationShown && ( //When the routepart is completed and the route part end notification should be shown.
         <FinishRoutePartNotification
           message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
           onNextPart={handleNextPart}

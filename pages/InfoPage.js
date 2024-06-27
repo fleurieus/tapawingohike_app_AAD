@@ -1,3 +1,8 @@
+
+/*
+This page provides instructional information on how to use the app. It includes explanations and visual aids such as images and icons to guide users through how to use the app.
+*/
+
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 import { Card } from 'react-native-paper';
