@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import LottieView from 'lottie-react-native'; // Import LottieView
+import LottieView from 'lottie-react-native';
 import { Audio } from 'expo-av';
 
 const FinishRoutePartNotification = ({ message, onNextPart, onDismiss }) => {

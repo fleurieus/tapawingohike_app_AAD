@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { Text, StyleSheet, Animated } from 'react-native';
 
 const NotificationToast = ({ message, type, showToast, onHide }) => {
-  const backgroundColor = type === 'success' ? 'green' : type === 'error' ? 'red' : 'gray';
+  const backgroundColor = type === 'success' ? 'green' : type === 'error' ? '#8B0000' : 'gray';
   const animation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
