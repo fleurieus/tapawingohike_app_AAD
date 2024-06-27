@@ -348,8 +348,8 @@ const HikePage = () => {
         backToLogin={stopAudio}
       />
       <MapView style={{ flex: 1 }} region={region} showsUserLocation>
-        {currentRoutePart.type === 'location' && (
-          <Marker coordinate={currentRoutePart.endpoint} title="Endpoint" description="Eindpunt van dit deel" />
+        {(
+          <Marker coordinate={currentRoutePart.endpoint} title="Endpoint" description="Eindpunt van dit deel" pinColor="red" />
         )}
       </MapView>
       {currentRoutePart.type === 'text' && (
