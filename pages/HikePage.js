@@ -235,6 +235,14 @@ const HikePage = () => {
     }
   };
 
+  const fastForwardAudio = async () => {
+    if (sound) {
+      const status = await sound.getStatusAsync();
+      const newPosition = Math.min(status.durationMillis, status.positionMillis + 10000);
+      await sound.setPositionAsync(newPosition);
+    }
+  };
+
   const handleNextPart = () => {
     console.log('Proceeding to the next part of the route');
     setShowNotification(false);
@@ -336,9 +344,14 @@ const HikePage = () => {
             <Text>{Math.floor(audioStatus.position / 1000)} s</Text>
             <Text>{Math.floor(audioStatus.duration / 1000)} s</Text>
           </View>
-          <TouchableOpacity onPress={rewindAudio}>
-            <Ionicons name="play-back" size={32} color="black" />
-          </TouchableOpacity>
+          <View style={styles.audioControlContainer}>
+            <TouchableOpacity onPress={rewindAudio}>
+              <Ionicons name="play-back" size={32} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={fastForwardAudio}>
+              <Ionicons name="play-forward" size={32} color="black" />
+            </TouchableOpacity>
+          </View>
         </View>
         {showNotification && !routePartEndNotificationShown && (
           <FinishRoutePartNotification
@@ -396,9 +409,14 @@ const HikePage = () => {
             <Text>{Math.floor(audioStatus.position / 1000)} s</Text>
             <Text>{Math.floor(audioStatus.duration / 1000)} s</Text>
           </View>
-          <TouchableOpacity onPress={rewindAudio}>
-            <Ionicons name="play-back" size={32} color="black" />
-          </TouchableOpacity>
+          <View style={styles.audioControlContainer}>
+            <TouchableOpacity onPress={rewindAudio}>
+              <Ionicons name="play-back" size={32} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={fastForwardAudio}>
+              <Ionicons name="play-forward" size={32} color="black" />
+            </TouchableOpacity>
+          </View>
         </View>
       )}
       {showNotification && !routePartEndNotificationShown && (
@@ -467,6 +485,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     zIndex: 1,
+  },
+  audioControlContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 10,
   },
 });
 
