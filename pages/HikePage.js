@@ -10,6 +10,7 @@ import RouteCompletionComponent from '../components/RouteCompletionComponent';
 import CustomHeader from '../components/CustomHeader';
 import Slider from '@react-native-community/slider';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import HalfwayNotification from '../components/HalfwayNotification';
 
 const routeParts = [
   {
@@ -221,6 +222,11 @@ const HikePage = () => {
     routeParts[currentRoutePartIndex].completed = true;
   };
 
+  const handleDismissHalfwayNotification = () => {
+    setShowNotification(false);
+    setHalfwayNotificationShown(false);
+  };
+
   const rewindAudio = async () => {
     if (sound) {
       const status = await sound.getStatusAsync();
@@ -264,12 +270,14 @@ const HikePage = () => {
   };
 
   if (routeCompleted) {
-    return<RouteCompletionComponent
-    onBackToPrevious={() => {
-      setRouteCompleted(false);
-      setCurrentRoutePartIndex(routeParts.length - 1); // Go back to the last part of the route
-    }}
-  />
+    return (
+      <RouteCompletionComponent
+        onBackToPrevious={() => {
+          setRouteCompleted(false);
+          setCurrentRoutePartIndex(routeParts.length - 1); // Go back to the last part of the route
+        }}
+      />
+    );
   }
 
   if (currentRoutePart.type === 'image' && currentRoutePart.fullscreen) {
@@ -289,6 +297,12 @@ const HikePage = () => {
             onNextPart={handleNextPart}
             onDismiss={handleDismissNotification}
             style={styles.notification}
+          />
+        )}
+        {showNotification && halfwayNotificationShown && (
+          <HalfwayNotification
+            message="Je bent halverwege het eindpunt!"
+            onDismiss={handleDismissHalfwayNotification}
           />
         )}
       </View>
@@ -312,12 +326,12 @@ const HikePage = () => {
             <Ionicons name={isPlaying ? 'pause' : 'play'} size={64} color="black" />
           </TouchableOpacity>
           <Slider
-          style={{ width: 300, height: 40 }}
-          minimumValue={0}
-          maximumValue={audioStatus.duration}
-          value={audioStatus.position}
-          onSlidingComplete={handleSliderValueChange}
-        />
+            style={{ width: 300, height: 40 }}
+            minimumValue={0}
+            maximumValue={audioStatus.duration}
+            value={audioStatus.position}
+            onSlidingComplete={handleSliderValueChange}
+          />
           <View style={styles.timeContainer}>
             <Text>{Math.floor(audioStatus.position / 1000)} s</Text>
             <Text>{Math.floor(audioStatus.duration / 1000)} s</Text>
@@ -332,6 +346,12 @@ const HikePage = () => {
             onNextPart={handleNextPart}
             onDismiss={handleDismissNotification}
             style={styles.notification}
+          />
+        )}
+        {showNotification && halfwayNotificationShown && (
+          <HalfwayNotification
+            message="Je bent halverwege het eindpunt!"
+            onDismiss={handleDismissHalfwayNotification}
           />
         )}
       </View>
@@ -366,12 +386,12 @@ const HikePage = () => {
             <Ionicons name={isPlaying ? 'pause' : 'play'} size={64} color="black" />
           </TouchableOpacity>
           <Slider
-          style={{ width: 200, height: 40 }}
-          minimumValue={0}
-          maximumValue={audioStatus.duration}
-          value={audioStatus.position}
-          onSlidingComplete={handleSliderValueChange}
-        />
+            style={{ width: 200, height: 40 }}
+            minimumValue={0}
+            maximumValue={audioStatus.duration}
+            value={audioStatus.position}
+            onSlidingComplete={handleSliderValueChange}
+          />
           <View style={styles.timeContainer}>
             <Text>{Math.floor(audioStatus.position / 1000)} s</Text>
             <Text>{Math.floor(audioStatus.duration / 1000)} s</Text>
@@ -387,6 +407,12 @@ const HikePage = () => {
           onNextPart={handleNextPart}
           onDismiss={handleDismissNotification}
           style={styles.notification}
+        />
+      )}
+      {showNotification && halfwayNotificationShown && (
+        <HalfwayNotification
+          message="Je bent halverwege het eindpunt!"
+          onDismiss={handleDismissHalfwayNotification}
         />
       )}
     </View>
