@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 import { Card } from 'react-native-paper';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import Header from '../components/Header';
@@ -15,9 +15,14 @@ const InfoPage = ({ navigation }) => {
           </View>
           <Text style={styles.text}>
             Volg de route naar het eind punt.{"\n"}
-            De rode circle op het map is je doel.
+            De rode marker op het map is je doel.
           </Text>
-          <View style={[styles.circle, styles.redCircle]}></View>
+          <View style={styles.circleContainer}>
+            <Image 
+              source={require('../assets/redMarker.jpg')} 
+              style={styles.redMarkerImage} 
+            />
+          </View>
           <Text style={styles.text}>
             De blauwe circle geeft je huidige locatie aan.
           </Text>
@@ -72,15 +77,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
+  circleContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  redMarkerImage: {
+    width: 50,
+    height: 50,
+  },
   circle: {
     width: 20,
     height: 20,
     borderRadius: 10,
     alignSelf: 'center',
     marginBottom: 20,
-  },
-  redCircle: {
-    backgroundColor: 'red',
   },
   blueCircle: {
     backgroundColor: 'blue',
