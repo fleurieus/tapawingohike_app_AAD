@@ -7,5 +7,6 @@ describe('<Header />', () => {
   it('has 1 child', () => {
     const tree = renderer.create(<Header />).toJSON();
     expect(tree.children.length).toBe(2);
+    expect(tree.children.length).toBe(2);
   });
 });
