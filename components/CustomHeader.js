@@ -18,7 +18,7 @@ const CustomHeader = ({ title, onNext, onPrevious, canProceedToNext, backToLogin
   const handleUndoAction = () => {
     Alert.alert(
       'Confirm',
-      'Ga terug naar de vorige route deel?',
+      'Ga terug naar het vorige route deel?',
       [
         {
           text: 'Cancel',
@@ -51,10 +51,18 @@ const CustomHeader = ({ title, onNext, onPrevious, canProceedToNext, backToLogin
     );
   };
 
-  const renderRightButtons = () => {
-    switch (routeName) {
-      case 'Hike':
-        return (
+  return (
+    <View style={styles.container}>
+      {routeName !== 'Login' && routeName !== 'Info' && (
+        <TouchableOpacity onPress={handleBack}>
+          <Text style={styles.backButton}>Logout</Text>
+        </TouchableOpacity>
+      )}
+      <View style={styles.titleContainer}>
+        <Text style={[ routeName === 'Hike' && styles.titleWithUndoIcon]}>{title}</Text>
+      </View>
+      {routeName === 'Hike' && (
+        <View style={styles.rightContainer}>
           <View style={styles.rightButtons}>
             <TouchableOpacity onPress={handleUndoAction}>
               <FontAwesome name="undo" size={24} color="black" style={styles.icon} />
@@ -65,21 +73,8 @@ const CustomHeader = ({ title, onNext, onPrevious, canProceedToNext, backToLogin
               </TouchableOpacity>
             )}
           </View>
-        );
-      default:
-        return null;
-    }
-  };
-
-  return (
-    <View style={styles.container}>
-      {routeName !== 'Login' && routeName !== 'Info' && (
-        <TouchableOpacity onPress={handleBack}>
-          <Text style={styles.backButton}>Logout</Text>
-        </TouchableOpacity>
+        </View>
       )}
-      <Text style={styles.title}>{title}</Text>
-      {renderRightButtons()}
     </View>
   );
 };
@@ -97,11 +92,24 @@ const styles = StyleSheet.create({
   backButton: {
     color: 'blue',
   },
-  title: {
+  titleContainer: {
     flex: 1,
+    alignItems: 'center',
+  },
+  title: {
     textAlign: 'center',
     fontSize: 20,
     fontWeight: 'bold',
+    marginLeft: 47,
+  },
+  titleWithUndoIcon: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  rightContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   rightButtons: {
     flexDirection: 'row',

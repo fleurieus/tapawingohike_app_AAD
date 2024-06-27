@@ -344,7 +344,7 @@ const HikePage = () => {
             <Text>{Math.floor(audioStatus.position / 1000)} s</Text>
             <Text>{Math.floor(audioStatus.duration / 1000)} s</Text>
           </View>
-          <View style={styles.audioControlContainer}>
+          <View style={styles.audioControlContainerFullScreen}>
             <TouchableOpacity onPress={rewindAudio}>
               <Ionicons name="play-back" size={32} color="black" />
             </TouchableOpacity>
@@ -461,6 +461,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+  },
+  audioControlContainerFullScreen: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 10,
+    marginRight: 80 
   },
   slider: {
     width: '80%',
