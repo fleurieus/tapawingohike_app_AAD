@@ -3,6 +3,7 @@ This component renders a notification toast message with a customizable message 
 It uses React Native's Animated API to animate the toast's appearance and disappearance. The toast fades in when 'showToast' prop is true, and fades out after
 2 seconds using a timeout. The position is fixed to the bottom-left of the screen.
 */
+
 import React, { useEffect, useRef } from 'react';
 import { Text, StyleSheet, Animated } from 'react-native';
 

@@ -1,3 +1,7 @@
+/*
+Model for defining a RoutePart
+*/
+
 interface RoutePart {
   type: 'map' | 'image' | 'audio'; // Type of the route part
   fullscreen: boolean; // Whether the route part should be displayed in fullscreen
