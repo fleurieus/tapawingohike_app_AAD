@@ -34,7 +34,7 @@ const NotificationToast = ({ message, type, showToast, onHide }) => {
 
   return (
     <Animated.View style={[styles.container, { backgroundColor, opacity: animation }]}>
-      <Text style={styles.message}>{message}</Text>
+      <Text testID="message" style={styles.message}>{message}</Text>
     </Animated.View>
   );
 };
