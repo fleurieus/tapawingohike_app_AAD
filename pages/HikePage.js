@@ -33,7 +33,7 @@ const routeParts = [
     fullscreen: false,
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
     radius: 25,
-    endpoint: { latitude: 37.422000, longitude: -122.085000 },
+    endpoint: { latitude: 37.421956, longitude: -122.084040 },
     completed: false,
   },
   {
@@ -41,7 +41,7 @@ const routeParts = [
     fullscreen: true,
     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
     radius: 25,
-    endpoint: { latitude: 37.422000, longitude: -122.085000 },
+    endpoint: { latitude: 37.421956, longitude: -122.084040 },
     completed: false,
   },
   {
@@ -133,7 +133,7 @@ const HikePage = () => {
                 if (!routePartEndNotificationShown) {
                   setShowNotification(true);
                 }
-              } else if (initialDistance && distance <= initialDistance / 2 && !halfwayNotificationShown) {
+              } else if (distance <= initialDistance / 2 && !halfwayNotificationShown) {
                 console.log('User is halfway to the endpoint');
                 setHalfwayNotificationShown(true);
                 setShowNotification(true);
