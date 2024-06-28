@@ -40,7 +40,8 @@ function LoginScreen({ navigation }: Props) {
 
     console.log('Logging in with team code:', teamCode);
     if (response.status === 200) {
-      await setItemAsync("team", team.id + "");
+      await setItemAsync("teamid", team.id + "");
+      await setItemAsync("editionid", team.editionId + "");
       setToastMessage('Login successful!');
       setToastType('success');
       setShowToast(true);

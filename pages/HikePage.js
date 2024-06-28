@@ -21,6 +21,7 @@ import CustomHeader from '../components/CustomHeader';
 import Slider from '@react-native-community/slider';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import HalfwayNotification from '../components/HalfwayNotification';
+import { getItem, getItemAsync } from 'expo-secure-store';
 
 const routeParts = [ //Routepart data used to display the routeparts
   {
@@ -177,6 +178,15 @@ const HikePage = () => {
     It also loads the audio for the first route part if it is of type 'audio'.
     */
     const initialize = async () => {
+      const teamId = await getItemAsync("teamid");
+      const editionId = await getItemAsync("editionId");
+      console.log(teamId);
+      console.log(editionId);
+
+      const response = await fetch(`http://192.168.1.34:7061/editions/${editionId}/teams/${teamId}`);
+      const json = await response.json();
+      console.log(json);
+
       await getCurrentLocation();
       await setupLocationWatcher();
       if (routeParts.length > 0 && routeParts[0].type === 'audio') {
