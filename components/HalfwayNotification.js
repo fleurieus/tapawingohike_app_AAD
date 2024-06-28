@@ -1,6 +1,7 @@
 /*
-This component renders a notification overlay upon completing a route part. It includes a Lottie animation (green tick), a message, and options to dismiss or proceed to the next route part.
-The overlay has a semi-transparent background to highlight the notification. The animation and sound play upon component initialization from provided assets. 
+Displays a halfway notification overlay with a Lottie animation, a message, and a dismiss button. 
+It includes a semi-transparent background to focus user attention. The animation and sound play upon initialization from assets.
+The notification box has fixed dimensions and a centered message with a dismiss button.
 */
 
 import React, { useRef, useEffect } from 'react';
@@ -8,8 +9,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { Audio } from 'expo-av';
 
-const FinishRoutePartNotification = ({ message, onNextPart, onDismiss }) => {
-
+const HalfwayNotification = ({ message, onDismiss }) => {
   let sound = useRef(null);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ const FinishRoutePartNotification = ({ message, onNextPart, onDismiss }) => {
     const loadSound = async () => {
       try {
         const { sound: soundObject } = await Audio.Sound.createAsync(
-          require('../assets/finishRoutePart.mp3')
+          require('../assets/halfway.mp3')
         );
         sound.current = soundObject;
         await sound.current.playAsync();
@@ -36,26 +36,19 @@ const FinishRoutePartNotification = ({ message, onNextPart, onDismiss }) => {
     };
   }, []);
 
-
   return (
     <View style={styles.overlay}>
       <View style={styles.notification}>
-        {/* Green Tick Animation */}
         <LottieView
-          source={require('../assets/tick.json')}
+          source={require('../assets/halfwayStar.json')}
           autoPlay
           loop={false}
           style={styles.lottieAnimation}
         />
         <Text style={styles.message}>{message}</Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={onDismiss} style={[styles.button, styles.dismissButton]}>
-            <Text style={styles.buttonText}>Sluiten</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={onNextPart} style={styles.button}>
-            <Text style={styles.buttonText}>Volgende</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity onPress={onDismiss} style={styles.button}>
+          <Text style={styles.buttonText}>Dismiss</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -80,31 +73,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   lottieAnimation: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
+    width: 200,
+    height: 200,
   },
   message: {
     marginBottom: 20,
     fontSize: 16,
     textAlign: 'center',
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
   button: {
     padding: 10,
     backgroundColor: '#007BFF',
     borderRadius: 5,
-    margin: 5,
-  },
-  dismissButton: {
-    backgroundColor: '#8B0000', // Dark Red color
   },
   buttonText: {
     color: 'white',
   },
 });
 
-export default FinishRoutePartNotification;
+export default HalfwayNotification;

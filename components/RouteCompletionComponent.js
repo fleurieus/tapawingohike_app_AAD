@@ -1,3 +1,8 @@
+/*
+This component displays a celebratory message and options upon completing a route. It includes a congratulatory animation (Lottie), buttons to navigate back to login
+or return to the previous route segment, and a confetti effect that triggers on screen. Additionally, it plays a sound upon component initialization.
+*/
+
 import React, { useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -45,7 +50,7 @@ const RouteCompletionComponent = ({ onBackToPrevious }) => {
               {/* Render Lottie Animation */}
       <LottieView
         ref={lottieRef}
-        source={require('../assets/celebration.json')} // Adjust the path to your Lottie file
+        source={require('../assets/celebration.json')}
         autoPlay
         loop={true}
         style={styles.lottieAnimation}
