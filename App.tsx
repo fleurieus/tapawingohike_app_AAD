@@ -11,6 +11,7 @@ import Header from './components/Header';
 import HikePage from './pages/HikePage';
 import InfoPage from './pages/InfoPage';
 import CustomHeader from './components/CustomHeader'; // Import the CustomHeader
+import { getItemAsync, setItem, setItemAsync } from 'expo-secure-store';
 
 type RootStackParamList = {
   Login: undefined;
@@ -32,9 +33,14 @@ function LoginScreen({ navigation }: Props) {
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState<'success' | 'error' | 'default'>('default');
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    let response = await fetch("http://192.168.1.34:7061/teams/" + teamCode);
+    let team = await response.json();
+    console.log(response.status);
+
     console.log('Logging in with team code:', teamCode);
-    if (teamCode === 'expectedCode') {
+    if (response.status === 200) {
+      await setItemAsync("team", team.id + "");
       setToastMessage('Login successful!');
       setToastType('success');
       setShowToast(true);
@@ -42,7 +48,7 @@ function LoginScreen({ navigation }: Props) {
         navigation.navigate('Hike');
       }, 1500); // Navigate after 1.5 seconds
     } else {
-      setToastMessage('Login failed: Invalid team code');
+      setToastMessage('Login failed: ' + team.message);
       setToastType('error');
       setShowToast(true);
     }
