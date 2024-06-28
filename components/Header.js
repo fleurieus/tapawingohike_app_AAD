@@ -1,3 +1,8 @@
+/*
+Represents a header for the Tapawingo Hike app. It includes an app logo on the left and the app name and subtitle on the right. 
+The header has a horizontal layout with padding and a border at the top and bottom.
+*/
+
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 

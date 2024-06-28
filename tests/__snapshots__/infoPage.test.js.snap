@@ -1,0 +1,328 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<InfoPage /> renders correctly 1`] = `
+<View
+  style={
+    {
+      "alignItems": "center",
+      "backgroundColor": "#bcebdf",
+      "flex": 1,
+      "justifyContent": "center",
+    }
+  }
+>
+  <View
+    collapsable={false}
+    style={
+      {
+        "backgroundColor": "rgba(247, 243, 249, 1)",
+        "borderRadius": 10,
+        "shadowColor": "#000",
+        "shadowOffset": {
+          "height": 1,
+          "width": 0,
+        },
+        "shadowOpacity": 0.15,
+        "shadowRadius": 3,
+        "width": "90%",
+      }
+    }
+    testID="card-container-outer-layer"
+  >
+    <View
+      collapsable={false}
+      style={
+        {
+          "backgroundColor": "rgba(247, 243, 249, 1)",
+          "borderColor": "#333",
+          "borderRadius": 10,
+          "borderWidth": 1,
+          "elevation": 1,
+          "flex": undefined,
+          "padding": 20,
+          "shadowColor": "#000",
+          "shadowOffset": {
+            "height": 1,
+            "width": 0,
+          },
+          "shadowOpacity": 0.3,
+          "shadowRadius": 1,
+        }
+      }
+      testID="card-container"
+    >
+      <View
+        style={
+          [
+            {
+              "flexShrink": 1,
+            },
+            undefined,
+          ]
+        }
+        testID="card"
+      >
+        <View
+          borderRadiusStyles={
+            {
+              "borderRadius": 10,
+            }
+          }
+          style={
+            [
+              {
+                "paddingHorizontal": 16,
+              },
+              {
+                "paddingVertical": 16,
+              },
+              undefined,
+            ]
+          }
+        >
+          <View
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#f0f0f0",
+                "borderBottomWidth": 4,
+                "borderColor": "#000000",
+                "borderTopWidth": 4,
+                "flexDirection": "row",
+                "paddingHorizontal": 20,
+                "paddingVertical": 10,
+              }
+            }
+          >
+            <Image
+              source={1}
+              style={
+                {
+                  "height": 60,
+                  "marginRight": 10,
+                  "paddingLeft": 10,
+                  "width": 60,
+                }
+              }
+              testID="logo-image"
+            />
+            <View
+              style={
+                {
+                  "flexDirection": "column",
+                }
+              }
+            >
+              <Text
+                style={
+                  {
+                    "fontSize": 28,
+                    "fontWeight": "bold",
+                  }
+                }
+              >
+                Tapawingo
+              </Text>
+              <Text
+                style={
+                  {
+                    "fontSize": 20,
+                    "marginLeft": 20,
+                  }
+                }
+              >
+                Hike app
+              </Text>
+            </View>
+          </View>
+          <View
+            style={
+              {
+                "alignItems": "center",
+                "flexDirection": "row",
+                "marginBottom": 20,
+              }
+            }
+          >
+            <Text
+              style={
+                {
+                  "flex": 1,
+                  "fontSize": 18,
+                  "fontWeight": "bold",
+                  "marginTop": 30,
+                }
+              }
+            >
+              Hoe werkt de app?
+            </Text>
+          </View>
+          <Text
+            style={
+              {
+                "fontSize": 16,
+                "marginBottom": 10,
+              }
+            }
+          >
+            Volg de route naar het eind punt.
+            
+
+            De rode marker op het map is je doel.
+          </Text>
+          <View
+            style={
+              {
+                "alignItems": "center",
+                "marginBottom": 20,
+              }
+            }
+          >
+            <Image
+              source={1}
+              style={
+                {
+                  "height": 50,
+                  "width": 50,
+                }
+              }
+            />
+          </View>
+          <Text
+            style={
+              {
+                "fontSize": 16,
+                "marginBottom": 10,
+              }
+            }
+          >
+            De blauwe circle geeft je huidige locatie aan.
+          </Text>
+          <View
+            style={
+              [
+                {
+                  "alignSelf": "center",
+                  "borderRadius": 10,
+                  "height": 20,
+                  "marginBottom": 20,
+                  "width": 20,
+                },
+                {
+                  "backgroundColor": "blue",
+                },
+              ]
+            }
+          />
+          <Text
+            style={
+              {
+                "fontSize": 16,
+                "marginBottom": 10,
+              }
+            }
+          >
+            Sommige routes hebben plaatjes en/of audio.
+          </Text>
+          <View
+            style={
+              {
+                "alignItems": "center",
+                "flexDirection": "row",
+                "marginBottom": 10,
+              }
+            }
+          >
+            <Text />
+            <Text
+              style={
+                {
+                  "fontSize": 16,
+                  "marginBottom": 10,
+                }
+              }
+            >
+              Plaatjes laten onderdelen van de route zien - zoek deze!
+            </Text>
+          </View>
+          <View
+            style={
+              {
+                "alignItems": "center",
+                "flexDirection": "row",
+                "marginBottom": 10,
+              }
+            }
+          >
+            <Text />
+            <Text
+              style={
+                {
+                  "fontSize": 16,
+                  "marginBottom": 10,
+                }
+              }
+            >
+              Luister naar de audio voor tips en info over de route.
+            </Text>
+          </View>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onClick={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={
+              {
+                "alignItems": "center",
+                "backgroundColor": "#4CAF50",
+                "borderRadius": 5,
+                "flexDirection": "row",
+                "justifyContent": "center",
+                "marginTop": 20,
+                "opacity": 1,
+                "paddingVertical": 10,
+              }
+            }
+          >
+            <Text />
+            <Text
+              style={
+                {
+                  "color": "white",
+                  "fontSize": 16,
+                  "marginLeft": 10,
+                }
+              }
+            >
+              TERUG NAAR LOGIN
+            </Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  </View>
+</View>
+`;

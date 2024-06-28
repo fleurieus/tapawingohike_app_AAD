@@ -1,8 +1,13 @@
+/*
+This component renders a notification toast message with a customizable message and background color based on the type ('success', 'error', or default 'gray').
+It uses React Native's Animated API to animate the toast's appearance and disappearance. The toast fades in when 'showToast' prop is true, and fades out after
+2 seconds using a timeout. The position is fixed to the bottom-left of the screen.
+*/
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { Text, StyleSheet, Animated } from 'react-native';
 
 const NotificationToast = ({ message, type, showToast, onHide }) => {
-  const backgroundColor = type === 'success' ? 'green' : type === 'error' ? 'red' : 'gray';
+  const backgroundColor = type === 'success' ? 'green' : type === 'error' ? '#8B0000' : 'gray';
   const animation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -29,7 +34,7 @@ const NotificationToast = ({ message, type, showToast, onHide }) => {
 
   return (
     <Animated.View style={[styles.container, { backgroundColor, opacity: animation }]}>
-      <Text style={styles.message}>{message}</Text>
+      <Text testID="message" style={styles.message}>{message}</Text>
     </Animated.View>
   );
 };
