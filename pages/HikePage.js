@@ -22,6 +22,7 @@ import Slider from '@react-native-community/slider';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import HalfwayNotification from '../components/HalfwayNotification';
 import { getItem, getItemAsync } from 'expo-secure-store';
+import {BACKEND_URL, BACKEND_PORT, BACKEND_PROTOCOL} from '../variables';
 
 let routeParts = [ //Routepart data used to display the routeparts
   {
@@ -181,7 +182,7 @@ const HikePage = () => {
       const teamId = await getItemAsync("teamid");
       const editionId = await getItemAsync("editionid");
 
-      const URL = `http://192.168.178.45:7061/editions/${editionId}/teams/${teamId}/routeparts`;
+      const URL = `${BACKEND_PROTOCOL}://${BACKEND_URL}:${BACKEND_PORT}/editions/${editionId}/teams/${teamId}/routeparts`;
       const response = await fetch(URL);
       const json = await response.json();
 

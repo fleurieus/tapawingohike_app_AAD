@@ -12,6 +12,7 @@ import HikePage from './pages/HikePage';
 import InfoPage from './pages/InfoPage';
 import CustomHeader from './components/CustomHeader'; // Import the CustomHeader
 import { getItemAsync, setItem, setItemAsync } from 'expo-secure-store';
+import {BACKEND_URL, BACKEND_PORT, BACKEND_PROTOCOL} from './variables';
 
 type RootStackParamList = {
   Login: undefined;
@@ -34,7 +35,7 @@ function LoginScreen({ navigation }: Props) {
   const [toastType, setToastType] = useState<'success' | 'error' | 'default'>('default');
 
   const handleLogin = async () => {
-    let response = await fetch("http://192.168.178.45:7061/teams/" + teamCode);
+    let response = await fetch(`${BACKEND_PROTOCOL}://${BACKEND_URL}:${BACKEND_PORT}/teams/${teamCode}`);
     let team = await response.json();
     console.log(response.status);
 
