@@ -23,7 +23,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import HalfwayNotification from '../components/HalfwayNotification';
 import { getItem, getItemAsync } from 'expo-secure-store';
 
-const routeParts = [ //Routepart data used to display the routeparts
+let routeParts = [ //Routepart data used to display the routeparts
   {
     type: 'image',
     fullscreen: false,
@@ -179,13 +179,29 @@ const HikePage = () => {
     */
     const initialize = async () => {
       const teamId = await getItemAsync("teamid");
-      const editionId = await getItemAsync("editionId");
-      console.log(teamId);
-      console.log(editionId);
+      const editionId = await getItemAsync("editionid");
 
-      const response = await fetch(`http://192.168.1.34:7061/editions/${editionId}/teams/${teamId}`);
+      const URL = `http://192.168.178.45:7061/editions/${editionId}/teams/${teamId}/routeparts`;
+      const response = await fetch(URL);
       const json = await response.json();
-      console.log(json);
+
+      if (json.length > 0) {
+        routeParts = [];
+        for (let i = 0; i < json.length; i++) {
+          let routepart =
+          {
+            type: json[i].routepart.routeType,
+            fullscreen: json[i].routepart.routepartFullscreen,
+            audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+            radius: json[i].routepart.destinations[0].radius,
+            endpoint: { latitude: json[i].routepart.destinations[0].latitude, 
+                        longitude: json[i].routepart.destinations[0].longitude },
+            completed: json[i].isFinished,
+          }
+          routeParts.push(routepart)
+        }
+      }
+
 
       await getCurrentLocation();
       await setupLocationWatcher();
@@ -495,7 +511,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     width: '100%',
     marginTop: 10,
-    marginRight: 80 
+    marginRight: 80
   },
   slider: {
     width: '80%',
