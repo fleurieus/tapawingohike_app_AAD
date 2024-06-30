@@ -35,6 +35,7 @@ function LoginScreen({ navigation }: Props) {
   const [toastType, setToastType] = useState<'success' | 'error' | 'default'>('default');
 
   const handleLogin = async () => {
+    
     let response = await fetch(`${BACKEND_PROTOCOL}://${BACKEND_URL}:${BACKEND_PORT}/teams/${teamCode}`);
     let team = await response.json();
     console.log(response.status);

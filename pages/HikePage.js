@@ -92,33 +92,38 @@ const HikePage = () => {
     const getCurrentLocation = async () => {
       try {
         console.log("--------------- getcurrentlocation")
+
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.error('Permission to access location was denied');
+          return;
+        }
+
+        const location = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Highest,
+        });
+
+        const { latitude, longitude } = location.coords;
+        console.log('Initial Location:', latitude, longitude);
+        setCurrentPosition({ latitude, longitude });
+        setRegion({
+          latitude,
+          longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        });
+
+        let initialDist = 999999;
         if (currentRoutePart !== undefined) {
-          let { status } = await Location.requestForegroundPermissionsAsync();
-          if (status !== 'granted') {
-            console.error('Permission to access location was denied');
-            return;
+          {
+            initialDist = LocationUtils.calculateDistance(
+              latitude,
+              longitude,
+              currentRoutePart.endpoint.latitude,
+              currentRoutePart.endpoint.longitude
+            );
           }
 
-          const location = await Location.getCurrentPositionAsync({
-            accuracy: Location.Accuracy.Highest,
-          });
-
-          const { latitude, longitude } = location.coords;
-          console.log('Initial Location:', latitude, longitude);
-          setCurrentPosition({ latitude, longitude });
-          setRegion({
-            latitude,
-            longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          });
-
-          const initialDist = LocationUtils.calculateDistance(
-            latitude,
-            longitude,
-            currentRoutePart.endpoint.latitude,
-            currentRoutePart.endpoint.longitude
-          );
           setInitialDistance(initialDist);
         }
 
@@ -134,49 +139,48 @@ const HikePage = () => {
     const setupLocationWatcher = async () => {
       try {
         console.log("--------------- setuplocationwatcher")
-        if (currentRoutePart !== undefined) {
-          await Location.watchPositionAsync(
-            {
-              accuracy: Location.Accuracy.Highest,
-              timeInterval: 15000, //The interval used to check the user's location
-              distanceInterval: 0,
-            },
-            (location) => {
-              const { latitude, longitude, accuracy } = location.coords;
-              console.log('Updated Location:', latitude, longitude);
-              console.log('Location Accuracy:', accuracy);
-              setCurrentPosition({ latitude, longitude });
+        await Location.watchPositionAsync(
+          {
+            accuracy: Location.Accuracy.Highest,
+            timeInterval: 15000, //The interval used to check the user's location
+            distanceInterval: 0,
+          },
+          (location) => {
+            const { latitude, longitude, accuracy } = location.coords;
+            console.log('Updated Location:', latitude, longitude);
+            console.log('Location Accuracy:', accuracy);
+            setCurrentPosition({ latitude, longitude });
 
-              if (currentRoutePart) {
-                const distance = LocationUtils.calculateDistance(
-                  latitude,
-                  longitude,
-                  currentRoutePart.endpoint.latitude,
-                  currentRoutePart.endpoint.longitude
-                );
-                console.log('Distance to endpoint in meters:', distance);
+            if (currentRoutePart) {
+              const distance = LocationUtils.calculateDistance(
+                latitude,
+                longitude,
+                currentRoutePart.endpoint.latitude,
+                currentRoutePart.endpoint.longitude
+              );
+              console.log('Distance to endpoint in meters:', distance);
 
-                if (distance <= currentRoutePart.radius) {
-                  console.log('Destination reached, showing notification');
-                  if (!routePartEndNotificationShown) {
-                    setShowNotification(true);
-                  }
-                } else if (distance <= initialDistance / 2 && !halfwayNotificationShown) {
-                  console.log('User is halfway to the endpoint');
-                  setHalfwayNotificationShown(true);
+              if (distance <= currentRoutePart.radius) {
+                console.log('Destination reached, showing notification');
+                if (!routePartEndNotificationShown) {
                   setShowNotification(true);
                 }
-              } else {
-                console.log('Error fetching route part');
+              } else if (distance <= initialDistance / 2 && !halfwayNotificationShown) {
+                console.log('User is halfway to the endpoint');
+                setHalfwayNotificationShown(true);
+                setShowNotification(true);
               }
+            } else {
+              console.log('Error fetching route part');
             }
-          );
-          if (!initialCentered) {
-            setRegion({ latitude, longitude });
-            setInitialCentered(true);
-            centerOnCurrentLocation();
           }
+        );
+        if (!initialCentered) {
+          setRegion({ latitude, longitude });
+          setInitialCentered(true);
+          centerOnCurrentLocation();
         }
+
 
       } catch (error) {
         console.log('Error setting up location watcher:', error);
@@ -315,6 +319,7 @@ const HikePage = () => {
     setShowNotification(false);
     if (currentRoutePartIndex < routeParts.length - 1) {
       setCurrentRoutePartIndex((prevIndex) => prevIndex + 1);
+      setCurrentRoutePart(routeParts[currentRoutePartIndex]);
     } else {
       setRouteCompleted(true);
     }
@@ -327,6 +332,7 @@ const HikePage = () => {
   const handlePreviousPart = () => { //Cleans up the state and decreases the current routepart index
     if (currentRoutePartIndex > 0) {
       setCurrentRoutePartIndex((prevIndex) => prevIndex - 1);
+      setCurrentRoutePart(routeParts[currentRoutePartIndex]);
     }
     stopAudio();
     setRoutePartEndNotificationShown(false);
@@ -354,6 +360,7 @@ const HikePage = () => {
           onBackToPrevious={() => {
             setRouteCompleted(false);
             setCurrentRoutePartIndex(routeParts.length - 1); // Go back to the last part of the route
+            setCurrentRoutePart(routeParts[currentRoutePartIndex]);
           }}
         />
       );
