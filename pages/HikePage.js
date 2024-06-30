@@ -15,59 +15,60 @@ import * as Location from 'expo-location';
 import { Audio } from 'expo-av';
 import LocationUtils from '../utils/LocationUtils.js';
 import defaultImage from '../assets/tapaicon.png';
-import FinishRoutePartNotification from '../components/FinishRoutePartNotification';
-import RouteCompletionComponent from '../components/RouteCompletionComponent';
-import CustomHeader from '../components/CustomHeader';
+import FinishRoutePartNotification from '../components/FinishRoutePartNotification.js';
+import RouteCompletionComponent from '../components/RouteCompletionComponent.js';
+import CustomHeader from '../components/CustomHeader.js';
 import Slider from '@react-native-community/slider';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import HalfwayNotification from '../components/HalfwayNotification';
+import HalfwayNotification from '../components/HalfwayNotification.js';
 import { getItem, getItemAsync } from 'expo-secure-store';
-import {BACKEND_URL, BACKEND_PORT, BACKEND_PROTOCOL} from '../variables';
+import { BACKEND_URL, BACKEND_PORT, BACKEND_PROTOCOL } from '../variables.js';
 
-let routeParts = [ //Routepart data used to display the routeparts
-  {
-    type: 'image',
-    fullscreen: false,
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-    radius: 25,
-    endpoint: { latitude: 37.421956, longitude: -122.084040 },
-    completed: false,
-  },
-  {
-    type: 'image',
-    fullscreen: true,
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-    radius: 25,
-    endpoint: { latitude: 37.421956, longitude: -122.084040 },
-    completed: false,
-  },
-  {
-    type: 'audio',
-    fullscreen: false,
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    radius: 25,
-    endpoint: { latitude: 37.421956, longitude: -122.084040 },
-    completed: false,
-  },
-  {
-    type: 'audio',
-    fullscreen: true,
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    radius: 25,
-    endpoint: { latitude: 37.421956, longitude: -122.084040 },
-    completed: false,
-  },
-  {
-    type: 'map',
-    fullscreen: true,
-    audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    radius: 25,
-    endpoint: { latitude: 37.422000, longitude: -122.085000 },
-    completed: false,
-  },
-];
+// let routeParts = [ //Routepart data used to display the routeparts
+//   {
+//     type: 'image',
+//     fullscreen: false,
+//     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+//     radius: 25,
+//     endpoint: { latitude: 37.421956, longitude: -122.084040 },
+//     completed: false,
+//   },
+//   {
+//     type: 'image',
+//     fullscreen: true,
+//     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+//     radius: 25,
+//     endpoint: { latitude: 37.421956, longitude: -122.084040 },
+//     completed: false,
+//   },
+//   {
+//     type: 'audio',
+//     fullscreen: false,
+//     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+//     radius: 25,
+//     endpoint: { latitude: 37.421956, longitude: -122.084040 },
+//     completed: false,
+//   },
+//   {
+//     type: 'audio',
+//     fullscreen: true,
+//     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+//     radius: 25,
+//     endpoint: { latitude: 37.421956, longitude: -122.084040 },
+//     completed: false,
+//   },
+//   {
+//     type: 'map',
+//     fullscreen: true,
+//     audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+//     radius: 25,
+//     endpoint: { latitude: 37.422000, longitude: -122.085000 },
+//     completed: false,
+//   },
+// ];
 
 const HikePage = () => {
+  const [routeParts, setRouteParts] = useState([]);
   const [currentPosition, setCurrentPosition] = useState(null); // User's current latitude and longitude
   const [region, setRegion] = useState(null); // Current map region
   const [currentRoutePartIndex, setCurrentRoutePartIndex] = useState(0); // Current index of the route part
@@ -80,8 +81,8 @@ const HikePage = () => {
   const [audioStatus, setAudioStatus] = useState({ position: 0, duration: 0 }); // Audio playback status (position and duration)
   const [initialDistance, setInitialDistance] = useState(null); // Initial distance to the endpoint of the current route part
   const [halfwayNotificationShown, setHalfwayNotificationShown] = useState(false); // Whether the halfway notification has been shown
-  const currentRoutePart = routeParts[currentRoutePartIndex]; // Get the current route part based on the currentRoutePartIndex
-
+  const [currentRoutePart, setCurrentRoutePart] = useState(undefined); // Get the current route part based on the currentRoutePartIndex
+  //let currentRoutePart = undefined;
 
   useEffect(() => {
     /*
@@ -90,33 +91,37 @@ const HikePage = () => {
     */
     const getCurrentLocation = async () => {
       try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          console.error('Permission to access location was denied');
-          return;
+        console.log("--------------- getcurrentlocation")
+        if (currentRoutePart !== undefined) {
+          let { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== 'granted') {
+            console.error('Permission to access location was denied');
+            return;
+          }
+
+          const location = await Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.Highest,
+          });
+
+          const { latitude, longitude } = location.coords;
+          console.log('Initial Location:', latitude, longitude);
+          setCurrentPosition({ latitude, longitude });
+          setRegion({
+            latitude,
+            longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          });
+
+          const initialDist = LocationUtils.calculateDistance(
+            latitude,
+            longitude,
+            currentRoutePart.endpoint.latitude,
+            currentRoutePart.endpoint.longitude
+          );
+          setInitialDistance(initialDist);
         }
 
-        const location = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Highest,
-        });
-
-        const { latitude, longitude } = location.coords;
-        console.log('Initial Location:', latitude, longitude);
-        setCurrentPosition({ latitude, longitude });
-        setRegion({
-          latitude,
-          longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        });
-
-        const initialDist = LocationUtils.calculateDistance(
-          latitude,
-          longitude,
-          currentRoutePart.endpoint.latitude,
-          currentRoutePart.endpoint.longitude
-        );
-        setInitialDistance(initialDist);
       } catch (error) {
         console.error('Error fetching location:', error);
       }
@@ -128,47 +133,51 @@ const HikePage = () => {
     */
     const setupLocationWatcher = async () => {
       try {
-        await Location.watchPositionAsync(
-          {
-            accuracy: Location.Accuracy.Highest,
-            timeInterval: 15000, //The interval used to check the user's location
-            distanceInterval: 0,
-          },
-          (location) => {
-            const { latitude, longitude, accuracy } = location.coords;
-            console.log('Updated Location:', latitude, longitude);
-            console.log('Location Accuracy:', accuracy);
-            setCurrentPosition({ latitude, longitude });
+        console.log("--------------- setuplocationwatcher")
+        if (currentRoutePart !== undefined) {
+          await Location.watchPositionAsync(
+            {
+              accuracy: Location.Accuracy.Highest,
+              timeInterval: 15000, //The interval used to check the user's location
+              distanceInterval: 0,
+            },
+            (location) => {
+              const { latitude, longitude, accuracy } = location.coords;
+              console.log('Updated Location:', latitude, longitude);
+              console.log('Location Accuracy:', accuracy);
+              setCurrentPosition({ latitude, longitude });
 
-            if (currentRoutePart) {
-              const distance = LocationUtils.calculateDistance(
-                latitude,
-                longitude,
-                currentRoutePart.endpoint.latitude,
-                currentRoutePart.endpoint.longitude
-              );
-              console.log('Distance to endpoint in meters:', distance);
+              if (currentRoutePart) {
+                const distance = LocationUtils.calculateDistance(
+                  latitude,
+                  longitude,
+                  currentRoutePart.endpoint.latitude,
+                  currentRoutePart.endpoint.longitude
+                );
+                console.log('Distance to endpoint in meters:', distance);
 
-              if (distance <= currentRoutePart.radius) {
-                console.log('Destination reached, showing notification');
-                if (!routePartEndNotificationShown) {
+                if (distance <= currentRoutePart.radius) {
+                  console.log('Destination reached, showing notification');
+                  if (!routePartEndNotificationShown) {
+                    setShowNotification(true);
+                  }
+                } else if (distance <= initialDistance / 2 && !halfwayNotificationShown) {
+                  console.log('User is halfway to the endpoint');
+                  setHalfwayNotificationShown(true);
                   setShowNotification(true);
                 }
-              } else if (distance <= initialDistance / 2 && !halfwayNotificationShown) {
-                console.log('User is halfway to the endpoint');
-                setHalfwayNotificationShown(true);
-                setShowNotification(true);
+              } else {
+                console.log('Error fetching route part');
               }
-            } else {
-              console.log('Error fetching route part');
             }
+          );
+          if (!initialCentered) {
+            setRegion({ latitude, longitude });
+            setInitialCentered(true);
+            centerOnCurrentLocation();
           }
-        );
-        if (!initialCentered) {
-          setRegion({ latitude, longitude });
-          setInitialCentered(true);
-          centerOnCurrentLocation();
         }
+
       } catch (error) {
         console.log('Error setting up location watcher:', error);
       }
@@ -179,15 +188,15 @@ const HikePage = () => {
     It also loads the audio for the first route part if it is of type 'audio'.
     */
     const initialize = async () => {
+      console.log("--------------- initialize")
       const teamId = await getItemAsync("teamid");
       const editionId = await getItemAsync("editionid");
-
       const URL = `${BACKEND_PROTOCOL}://${BACKEND_URL}:${BACKEND_PORT}/editions/${editionId}/teams/${teamId}/routeparts`;
       const response = await fetch(URL);
       const json = await response.json();
 
       if (json.length > 0) {
-        routeParts = [];
+        let tempRouteParts = [];
         for (let i = 0; i < json.length; i++) {
           let routepart =
           {
@@ -195,12 +204,20 @@ const HikePage = () => {
             fullscreen: json[i].routepart.routepartFullscreen,
             audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
             radius: json[i].routepart.destinations[0].radius,
-            endpoint: { latitude: json[i].routepart.destinations[0].latitude, 
-                        longitude: json[i].routepart.destinations[0].longitude },
+            endpoint: {
+              latitude: json[i].routepart.destinations[0].latitude,
+              longitude: json[i].routepart.destinations[0].longitude
+            },
             completed: json[i].isFinished,
           }
-          routeParts.push(routepart)
+          tempRouteParts.push(routepart);
         }
+
+        setRouteParts(tempRouteParts);
+        setCurrentRoutePart(tempRouteParts[currentRoutePartIndex]);
+        console.log(currentRoutePart)
+
+        console.log(routeParts);
       }
 
 
@@ -222,6 +239,7 @@ const HikePage = () => {
   }, []);
 
   useEffect(() => {
+    console.log("--------------- useeffect currentRoutePart")
     if (currentRoutePart && currentRoutePart.type === 'audio') {  // Loads the audio file for the current route part if it is of type 'audio'. It sets the sound state and updates the audio status during playback.
       const loadAudio = async () => {
         const { sound } = await Audio.Sound.createAsync({ uri: currentRoutePart.audioUrl });
@@ -325,51 +343,25 @@ const HikePage = () => {
       });
     }
   };
-
-  if (routeCompleted) { //When the route is completed this is displayed.
-    return (
-      <RouteCompletionComponent
-        onBackToPrevious={() => {
-          setRouteCompleted(false);
-          setCurrentRoutePartIndex(routeParts.length - 1); // Go back to the last part of the route
-        }}
-      />
-    );
-  }
-
-  if (currentRoutePart.type === 'image' && currentRoutePart.fullscreen) { //Image and fullscreen routepart
-    return (
-      <View style={styles.fullScreenContainer}>
-        <CustomHeader
-          title="Hike"
-          onNext={handleNextPart}
-          onPrevious={handlePreviousPart}
-          canProceedToNext={routeParts[currentRoutePartIndex].completed}
-          backToLogin={stopAudio}
+  console.log(`STATUS: ${routeParts !== undefined && routeParts.length !== 0 && currentRoutePart !== undefined}`);
+  console.log(`ROUTEPARTS UNDEFINED: ${routeParts === undefined}`)
+  console.log(`ROUTEPARTS LENGTH: ${routeParts.length}`)
+  console.log(`CURRENTROUTEPART UNDEFINED: ${currentRoutePart === undefined}`)
+  if (routeParts !== undefined && routeParts.length !== 0 && currentRoutePart !== undefined) {
+    if (routeCompleted) { //When the route is completed this is displayed.
+      return (
+        <RouteCompletionComponent
+          onBackToPrevious={() => {
+            setRouteCompleted(false);
+            setCurrentRoutePartIndex(routeParts.length - 1); // Go back to the last part of the route
+          }}
         />
-        <Image source={defaultImage} style={styles.fullScreenImage} />
-        {showNotification && !routePartEndNotificationShown && (
-          <FinishRoutePartNotification
-            message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
-            onNextPart={handleNextPart}
-            onDismiss={handleDismissNotification}
-            style={styles.notification}
-          />
-        )}
-        {showNotification && halfwayNotificationShown && (
-          <HalfwayNotification
-            message="Je bent halverwege het eindpunt!"
-            onDismiss={handleDismissHalfwayNotification}
-          />
-        )}
-      </View>
-    );
-  }
+      );
+    }
 
-  if (currentRoutePart.type === 'audio' && currentRoutePart.fullscreen) { //Audio and fullscreen routepart
-    return (
-      <View style={styles.fullScreenContainer}>
-        <View style={styles.headerContainer}>
+    if (currentRoutePart.type === 'image' && currentRoutePart.fullscreen) { //Image and fullscreen routepart
+      return (
+        <View style={styles.fullScreenContainer}>
           <CustomHeader
             title="Hike"
             onNext={handleNextPart}
@@ -377,32 +369,123 @@ const HikePage = () => {
             canProceedToNext={routeParts[currentRoutePartIndex].completed}
             backToLogin={stopAudio}
           />
+          <Image source={defaultImage} style={styles.fullScreenImage} />
+          {showNotification && !routePartEndNotificationShown && (
+            <FinishRoutePartNotification
+              message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
+              onNextPart={handleNextPart}
+              onDismiss={handleDismissNotification}
+              style={styles.notification}
+            />
+          )}
+          {showNotification && halfwayNotificationShown && (
+            <HalfwayNotification
+              message="Je bent halverwege het eindpunt!"
+              onDismiss={handleDismissHalfwayNotification}
+            />
+          )}
         </View>
-        <View style={styles.audioContainer}>
-          <TouchableOpacity onPress={playPauseAudio}>
-            <Ionicons name={isPlaying ? 'pause' : 'play'} size={64} color="black" />
-          </TouchableOpacity>
-          <Slider
-            style={{ width: 300, height: 40 }}
-            minimumValue={0}
-            maximumValue={audioStatus.duration}
-            value={audioStatus.position}
-            onSlidingComplete={handleSliderValueChange}
-          />
-          <View style={styles.timeContainer}>
-            <Text>{Math.floor(audioStatus.position / 1000)} s</Text>
-            <Text>{Math.floor(audioStatus.duration / 1000)} s</Text>
+      );
+    }
+
+    if (currentRoutePart.type === 'audio' && currentRoutePart.fullscreen) { //Audio and fullscreen routepart
+      return (
+        <View style={styles.fullScreenContainer}>
+          <View style={styles.headerContainer}>
+            <CustomHeader
+              title="Hike"
+              onNext={handleNextPart}
+              onPrevious={handlePreviousPart}
+              canProceedToNext={routeParts[currentRoutePartIndex].completed}
+              backToLogin={stopAudio}
+            />
           </View>
-          <View style={styles.audioControlContainerFullScreen}>
-            <TouchableOpacity onPress={rewindAudio}>
-              <Ionicons name="play-back" size={32} color="black" />
+          <View style={styles.audioContainer}>
+            <TouchableOpacity onPress={playPauseAudio}>
+              <Ionicons name={isPlaying ? 'pause' : 'play'} size={64} color="black" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={fastForwardAudio}>
-              <Ionicons name="play-forward" size={32} color="black" />
-            </TouchableOpacity>
+            <Slider
+              style={{ width: 300, height: 40 }}
+              minimumValue={0}
+              maximumValue={audioStatus.duration}
+              value={audioStatus.position}
+              onSlidingComplete={handleSliderValueChange}
+            />
+            <View style={styles.timeContainer}>
+              <Text>{Math.floor(audioStatus.position / 1000)} s</Text>
+              <Text>{Math.floor(audioStatus.duration / 1000)} s</Text>
+            </View>
+            <View style={styles.audioControlContainerFullScreen}>
+              <TouchableOpacity onPress={rewindAudio}>
+                <Ionicons name="play-back" size={32} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={fastForwardAudio}>
+                <Ionicons name="play-forward" size={32} color="black" />
+              </TouchableOpacity>
+            </View>
           </View>
+          {showNotification && !routePartEndNotificationShown && (
+            <FinishRoutePartNotification
+              message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
+              onNextPart={handleNextPart}
+              onDismiss={handleDismissNotification}
+              style={styles.notification}
+            />
+          )}
+          {showNotification && halfwayNotificationShown && (
+            <HalfwayNotification
+              message="Je bent halverwege het eindpunt!"
+              onDismiss={handleDismissHalfwayNotification}
+            />
+          )}
         </View>
-        {showNotification && !routePartEndNotificationShown && (
+      );
+    }
+
+    return (
+      <View style={{ flex: 1 }}>
+        <CustomHeader
+          title="Hike"
+          onNext={handleNextPart}
+          onPrevious={handlePreviousPart}
+          canProceedToNext={routeParts[currentRoutePartIndex].completed}
+          backToLogin={stopAudio}
+        />
+        <MapView style={{ flex: 1 }} region={region} showsUserLocation>
+          {(
+            <Marker coordinate={currentRoutePart.endpoint} title="Endpoint" description="Eindpunt van dit deel" pinColor="red" />
+          )}
+        </MapView>
+        {currentRoutePart.type === 'image' && !currentRoutePart.fullscreen && ( //Image and non-fullscreen routepart 
+          <Image source={defaultImage} style={styles.image} />
+        )}
+        {currentRoutePart.type === 'audio' && !currentRoutePart.fullscreen && ( //Audio and non-fullscreen routepart
+          <View style={styles.audioContainer}>
+            <TouchableOpacity onPress={playPauseAudio}>
+              <Ionicons name={isPlaying ? 'pause' : 'play'} size={64} color="black" />
+            </TouchableOpacity>
+            <Slider
+              style={{ width: 200, height: 40 }}
+              minimumValue={0}
+              maximumValue={audioStatus.duration}
+              value={audioStatus.position}
+              onSlidingComplete={handleSliderValueChange}
+            />
+            <View style={styles.timeContainer}>
+              <Text>{Math.floor(audioStatus.position / 1000)} s</Text>
+              <Text>{Math.floor(audioStatus.duration / 1000)} s</Text>
+            </View>
+            <View style={styles.audioControlContainer}>
+              <TouchableOpacity onPress={rewindAudio}>
+                <Ionicons name="play-back" size={32} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={fastForwardAudio}>
+                <Ionicons name="play-forward" size={32} color="black" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+        {showNotification && !routePartEndNotificationShown && ( //When the routepart is completed and the route part end notification should be shown.
           <FinishRoutePartNotification
             message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
             onNextPart={handleNextPart}
@@ -420,65 +503,6 @@ const HikePage = () => {
     );
   }
 
-  return (
-    <View style={{ flex: 1 }}>
-      <CustomHeader
-        title="Hike"
-        onNext={handleNextPart}
-        onPrevious={handlePreviousPart}
-        canProceedToNext={routeParts[currentRoutePartIndex].completed}
-        backToLogin={stopAudio}
-      />
-      <MapView style={{ flex: 1 }} region={region} showsUserLocation>
-        {(
-          <Marker coordinate={currentRoutePart.endpoint} title="Endpoint" description="Eindpunt van dit deel" pinColor="red" />
-        )}
-      </MapView>
-      {currentRoutePart.type === 'image' && !currentRoutePart.fullscreen && ( //Image and non-fullscreen routepart 
-        <Image source={defaultImage} style={styles.image} />
-      )}
-      {currentRoutePart.type === 'audio' && !currentRoutePart.fullscreen && ( //Audio and non-fullscreen routepart
-        <View style={styles.audioContainer}>
-          <TouchableOpacity onPress={playPauseAudio}>
-            <Ionicons name={isPlaying ? 'pause' : 'play'} size={64} color="black" />
-          </TouchableOpacity>
-          <Slider
-            style={{ width: 200, height: 40 }}
-            minimumValue={0}
-            maximumValue={audioStatus.duration}
-            value={audioStatus.position}
-            onSlidingComplete={handleSliderValueChange}
-          />
-          <View style={styles.timeContainer}>
-            <Text>{Math.floor(audioStatus.position / 1000)} s</Text>
-            <Text>{Math.floor(audioStatus.duration / 1000)} s</Text>
-          </View>
-          <View style={styles.audioControlContainer}>
-            <TouchableOpacity onPress={rewindAudio}>
-              <Ionicons name="play-back" size={32} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={fastForwardAudio}>
-              <Ionicons name="play-forward" size={32} color="black" />
-            </TouchableOpacity>
-          </View>
-        </View>
-      )}
-      {showNotification && !routePartEndNotificationShown && ( //When the routepart is completed and the route part end notification should be shown.
-        <FinishRoutePartNotification
-          message="Je hebt het eindpunt van dit deel van de route bereikt. Wil je doorgaan naar het volgende deel?"
-          onNextPart={handleNextPart}
-          onDismiss={handleDismissNotification}
-          style={styles.notification}
-        />
-      )}
-      {showNotification && halfwayNotificationShown && (
-        <HalfwayNotification
-          message="Je bent halverwege het eindpunt!"
-          onDismiss={handleDismissHalfwayNotification}
-        />
-      )}
-    </View>
-  );
 };
 
 const styles = StyleSheet.create({

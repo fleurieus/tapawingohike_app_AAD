@@ -5,5 +5,5 @@
   },
   "include": [
     "**/*.ts" 
-  ]
+, "pages/HikePage.js"  ]
 }
